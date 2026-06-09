@@ -6,7 +6,6 @@ import { motion, useScroll, useTransform, useInView, animate } from 'framer-moti
 import WaitlistModal from './WaitlistModal';
 import SiteFooter from './SiteFooter';
 
-const MapClient = dynamic(() => import('./MapClient'), { ssr: false });
 
 const FD   = 'var(--font-bebas-var), Impact, sans-serif';
 const FB   = 'var(--font-inter-var), -apple-system, sans-serif';
