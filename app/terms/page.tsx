@@ -42,7 +42,7 @@ const SECTIONS = [
   },
   {
     title: '9. Intellectual Property',
-    body: `All intellectual property in the Outrun app, website, and brand — including logos, design, code, and content — belongs to Outrun London Limited. You may not reproduce, distribute, or create derivative works without our prior written consent.`,
+    body: `All intellectual property in the Outrun app, website, and brand (including logos, design, code, and content) belongs to Outrun London Limited. You may not reproduce, distribute, or create derivative works without our prior written consent.`,
   },
   {
     title: '10. Limitation of Liability',

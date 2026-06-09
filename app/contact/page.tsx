@@ -131,7 +131,7 @@ export default function ContactPage() {
               CONTACT US.
             </h1>
             <p style={{ fontFamily: FB, fontSize: 'clamp(13px,1.1vw,15px)', color: 'rgba(255,255,255,.38)', marginBottom: 40 }}>
-              Whether it's a partnership, a question, or just a hello — we'd love to hear from you.
+              Whether it's a partnership, a question, or just a hello, we'd love to hear from you.
             </p>
             <ContactForm />
           </motion.div>

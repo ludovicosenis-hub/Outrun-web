@@ -162,11 +162,11 @@ function FullPageScroller({ children }: { children: React.ReactNode }) {
 const FAQS = [
   {
     q: 'What is Outrun?',
-    a: 'Outrun is the first running app built around your social life. Track your runs with GPS, share them with friends, react to their routes, and discover run clubs and events near you — all in one place.',
+    a: 'Outrun is the first running app built around your social life. Track your runs with GPS, share them with friends, react to their routes, and discover run clubs and events near you. All in one place.',
   },
   {
     q: 'How does the feed work?',
-    a: 'Every run you record appears in your friends\' feed — with your route, pace, distance, and time. Other users can react with a selfie, leave a comment, or give you a like. Their runs show up in your feed too.',
+    a: 'Every run you record appears in your friends\' feed with your route, pace, distance, and time. Other users can react with a selfie, leave a comment, or give you a like. Their runs show up in your feed too.',
   },
   {
     q: 'How do I find and join a run club?',
@@ -174,11 +174,11 @@ const FAQS = [
   },
   {
     q: 'Where is Outrun available?',
-    a: 'At launch, Outrun will be available in the UK, Spain, and Italy. We plan to expand to every country shortly after — if your city isn\'t on the list yet, it will be soon.',
+    a: 'At launch, Outrun will be available in the UK, Spain, and Italy. We plan to expand to every country shortly after. If your city is not on the list yet, it will be soon.',
   },
   {
     q: 'Is Outrun free to download?',
-    a: 'Yes — Outrun is free to download on the App Store. Some premium features and event tickets are available as in-app purchases.',
+    a: 'Yes, Outrun is free to download on the App Store. Some premium features and event tickets are available as in-app purchases.',
   },
 ];
 
@@ -585,10 +585,10 @@ export default function Home() {
                 A NEW SOCIAL FOR RUNNERS.
               </h2>
               <p style={{ fontFamily: FB, fontSize: 'clamp(15px,1.4vw,17px)', color: 'rgba(255,255,255,.82)', lineHeight: 1.8 }}>
-                Outrun is not a fitness app. It's a social network built around the run — where your miles are content, your crew is your community, and every km matters.
+                Outrun is not a fitness app. It's a social network built around the run. Your miles are content, your crew is your community, and every km matters.
               </p>
               <p style={{ fontFamily: FB, fontSize: 'clamp(14px,1.2vw,15px)', color: 'rgba(255,255,255,.42)', lineHeight: 1.8 }}>
-                Built for the generation that runs not just for fitness — but for the feeling, the people, and the city.
+                Built for the generation that runs not just for fitness, but for the feeling, the people, and the city.
               </p>
             </div>
           </Reveal>
@@ -630,7 +630,7 @@ export default function Home() {
                     Interact with friends on the best running feed. Track your runs, dive into detailed stats, and find run clubs around you to join.
                   </p>
                   <p style={{ fontFamily: FB, fontSize: 'clamp(14px,1.2vw,15px)', color: 'rgba(255,255,255,.42)', lineHeight: 1.8 }}>
-                    Every run you record becomes part of your story — and your friends' feed. Outrun turns solo miles into shared moments.
+                    Every run you record becomes part of your story and your friends' feed. Outrun turns solo miles into shared moments.
                   </p>
                 </div>
               </Reveal>

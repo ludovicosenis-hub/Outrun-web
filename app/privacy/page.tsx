@@ -34,7 +34,7 @@ const SECTIONS = [
   },
   {
     title: '7. Your Rights',
-    body: `Under UK GDPR, you have the right to:\n\n• Access the personal data we hold about you.\n• Correct inaccurate data.\n• Request deletion of your data ("right to be forgotten").\n• Object to or restrict certain processing.\n• Data portability — receive your data in a machine-readable format.\n• Withdraw consent at any time where processing is based on consent.\n\nTo exercise any of these rights, contact us at info@outrunldn.com. You also have the right to lodge a complaint with the Information Commissioner's Office (ICO) at ico.org.uk.`,
+    body: `Under UK GDPR, you have the right to:\n\n• Access the personal data we hold about you.\n• Correct inaccurate data.\n• Request deletion of your data ("right to be forgotten").\n• Object to or restrict certain processing.\n• Data portability: receive your data in a machine-readable format.\n• Withdraw consent at any time where processing is based on consent.\n\nTo exercise any of these rights, contact us at info@outrunldn.com. You also have the right to lodge a complaint with the Information Commissioner's Office (ICO) at ico.org.uk.`,
   },
   {
     title: '8. Cookies',

@@ -13,7 +13,7 @@ const BG = '#07070f';
 const AREAS = [
   {
     title: 'Software & Engineering',
-    desc: 'Backend, mobile (iOS & Android), frontend, and infrastructure. We move fast and build things that matter — from the social feed to GPS tracking to real-time notifications.',
+    desc: 'Backend, mobile (iOS & Android), frontend, and infrastructure. We move fast and build things that matter: from the social feed to GPS tracking to real-time notifications.',
   },
   {
     title: 'Growth & Marketing',
@@ -25,7 +25,7 @@ const AREAS = [
   },
   {
     title: 'Brand & Design',
-    desc: 'UI/UX, visual identity, content creation, and photography. We want Outrun to feel as good as it looks — from the app to the streets.',
+    desc: 'UI/UX, visual identity, content creation, and photography. We want Outrun to feel as good as it looks, from the app to the streets.',
   },
 ];
 
