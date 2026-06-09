@@ -77,17 +77,20 @@ function Nav({ onDownload }: { onDownload: () => void }) {
         backdropFilter: scrolled || menuOpen ? 'blur(20px)' : 'none',
         WebkitBackdropFilter: scrolled || menuOpen ? 'blur(20px)' : 'none',
       }}>
-        {/* Left links */}
-        <div className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-          {[['Join Us', '/join'], ['Privacy', '/privacy'], ['Terms', '/terms']].map(([l, href]) => (
-            <a key={l} href={href} style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,.55)', textDecoration: 'none', letterSpacing: .2, transition: 'color .2s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,.55)')}>{l}</a>
-          ))}
+        {/* Left — logo on mobile, links on desktop */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+          <a href="/" className="mobile-show" style={{ fontFamily: FD, fontSize: 20, letterSpacing: 6, color: '#fff', textDecoration: 'none', display: 'none' }}>OUTRUN</a>
+          <div className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+            {[['Join Us', '/join'], ['Privacy', '/privacy'], ['Terms', '/terms']].map(([l, href]) => (
+              <a key={l} href={href} style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,.55)', textDecoration: 'none', letterSpacing: .2, transition: 'color .2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,.55)')}>{l}</a>
+            ))}
+          </div>
         </div>
 
-        {/* Center logo — hidden until scrolled past hero */}
-        <a href="/" style={{ fontFamily: FD, fontSize: 22, letterSpacing: 7, color: '#fff', textDecoration: 'none', justifySelf: 'center', opacity: scrolled ? 1 : 0, transition: 'opacity .4s' }}>OUTRUN</a>
+        {/* Center logo — desktop only, hidden until scrolled */}
+        <a href="/" className="mobile-hide" style={{ fontFamily: FD, fontSize: 22, letterSpacing: 7, color: '#fff', textDecoration: 'none', justifySelf: 'center', opacity: scrolled ? 1 : 0, transition: 'opacity .4s' }}>OUTRUN</a>
 
         {/* Right */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'flex-end' }}>
@@ -123,8 +126,9 @@ function Nav({ onDownload }: { onDownload: () => void }) {
         pointerEvents: menuOpen ? 'auto' : 'none',
       }}>
         {[
-          { href: '/', label: 'Home' },
           { href: '/join', label: 'Join Us' },
+          { href: '/privacy', label: 'Privacy' },
+          { href: '/terms', label: 'Terms' },
         ].map(({ href, label }) => (
           <a key={href} href={href} onClick={() => setMenuOpen(false)}
             style={{
@@ -143,7 +147,7 @@ function Nav({ onDownload }: { onDownload: () => void }) {
           fontSize: 15, fontFamily: FB, fontWeight: 800, letterSpacing: .2,
           border: 'none', cursor: 'pointer',
         }}>
-          Download on App Store
+          Download
         </button>
       </div>
     </>
@@ -336,13 +340,13 @@ function FAQ() {
 function FlagPanels() {
   const [hovered, setHovered] = useState<number | null>(null);
   const flags = [
-    { code: 'gb', label: 'United Kingdom', sub: 'London · Manchester · Edinburgh' },
-    { code: 'it', label: 'Italy',          sub: 'Milan · Rome · Florence' },
-    { code: 'es', label: 'Spain',          sub: 'Madrid · Barcelona' },
+    { code: 'gb', label: 'United Kingdom' },
+    { code: 'it', label: 'Italy' },
+    { code: 'es', label: 'Spain' },
   ];
   return (
     <div className="flags-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, height: 'clamp(260px,28vw,380px)' }}>
-      {flags.map(({ code, label, sub }, i) => {
+      {flags.map(({ code, label }, i) => {
         const isHovered = hovered === i;
         return (
           <div
@@ -365,9 +369,8 @@ function FlagPanels() {
               style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', transition: 'transform .4s ease', transform: isHovered ? 'scale(1.06)' : 'scale(1)' }}
             />
             <div style={{ position: 'absolute', inset: 0, background: isHovered ? 'rgba(7,7,15,.45)' : 'rgba(7,7,15,.65)', transition: 'background .3s ease' }} />
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: 'clamp(20px,3vw,36px)' }}>
-              <p style={{ fontFamily: FD, fontSize: 'clamp(20px,2.4vw,32px)', letterSpacing: .5, lineHeight: 1, marginBottom: 10 }}>{label}</p>
-              <p style={{ fontFamily: FB, fontSize: 'clamp(12px,1.1vw,14px)', color: 'rgba(255,255,255,.45)', lineHeight: 1.6 }}>{sub}</p>
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: 'clamp(16px,3vw,36px)' }}>
+              <p style={{ fontFamily: FD, fontSize: 'clamp(18px,2.4vw,32px)', letterSpacing: .5, lineHeight: 1 }}>{label}</p>
             </div>
           </div>
         );
@@ -658,7 +661,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════
           3. THREE PHONES — onboarding screens
       ══════════════════════════════════════════════ */}
-      <section id="the-app" style={{ background: BG, height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 clamp(24px,5vw,72px)' }}>
+      <section id="the-app" style={{ background: BG, minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 'clamp(80px,10vw,120px) clamp(24px,5vw,72px)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', width: '100%' }}>
 
           <Reveal>
@@ -669,14 +672,15 @@ export default function Home() {
             </div>
           </Reveal>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }}>
+          <div className="who-grid" style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }}>
 
-            {/* Left — stacked phones */}
-            <Reveal y={32}>
-              <PhoneStack />
-            </Reveal>
+            <div className="mobile-order-2">
+              <Reveal y={32}>
+                <PhoneStack />
+              </Reveal>
+            </div>
 
-            {/* Right — text */}
+            <div className="mobile-order-1">
             <Reveal delay={.15} y={24}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                 <h2 style={{ fontFamily: FD, fontSize: 'clamp(36px,4.5vw,60px)', lineHeight: .88, letterSpacing: .5 }}>
@@ -687,6 +691,7 @@ export default function Home() {
                 </p>
               </div>
             </Reveal>
+            </div>
 
           </div>
 

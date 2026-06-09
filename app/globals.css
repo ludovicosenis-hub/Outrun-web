@@ -6,7 +6,8 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
+body { overflow-x: hidden; }
 
 body {
   background: var(--bg);
@@ -41,6 +42,10 @@ body {
   .phone-side { display: none !important; }
   .phone-stack-wrap { justify-content: center !important; height: clamp(360px,75vw,500px) !important; }
   .phone-center { margin-left: 0 !important; height: 100% !important; }
+
+  /* The App section — text first, phone second on mobile */
+  .mobile-order-1 { order: -1 !important; }
+  .mobile-order-2 { order: 1 !important; }
 }
 @media (min-width: 769px) {
   .mobile-show { display: none !important; }
