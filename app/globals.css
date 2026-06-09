@@ -34,10 +34,6 @@ body {
   .who-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
   .who-photos { grid-template-columns: repeat(3,1fr) !important; }
 
-  /* Flag panels — vertical stack */
-  .flags-grid { grid-template-columns: 1fr !important; height: auto !important; }
-  .flags-grid > div { height: 120px !important; }
-
   /* Phone stack — hide side phones, show only center */
   .phone-side { display: none !important; }
   .phone-stack-wrap { justify-content: center !important; height: clamp(360px,75vw,500px) !important; }

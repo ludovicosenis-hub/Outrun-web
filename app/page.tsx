@@ -244,7 +244,7 @@ function FlagPanels() {
     { code: 'es', label: 'Spain' },
   ];
   return (
-    <div className="flags-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, height: 'clamp(260px,28vw,380px)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       {flags.map(({ code, label }, i) => {
         const isHovered = hovered === i;
         return (
@@ -253,23 +253,24 @@ function FlagPanels() {
             onMouseEnter={() => setHovered(i)}
             onMouseLeave={() => setHovered(null)}
             style={{
-              borderRadius: 20,
+              borderRadius: 16,
               overflow: 'hidden',
               position: 'relative',
+              height: 'clamp(88px,9vw,120px)',
               cursor: 'pointer',
-              transform: isHovered ? 'scale(1.03) translateY(-6px)' : 'scale(1) translateY(0)',
+              transform: isHovered ? 'scale(1.02) translateY(-3px)' : 'scale(1)',
               transition: 'transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease',
-              boxShadow: isHovered ? '0 24px 48px rgba(0,0,0,.7)' : '0 4px 16px rgba(0,0,0,.3)',
+              boxShadow: isHovered ? '0 16px 40px rgba(0,0,0,.7)' : '0 4px 16px rgba(0,0,0,.3)',
             }}
           >
             <img
               src={`https://flagcdn.com/w640/${code}.png`}
               alt={label}
-              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', transition: 'transform .4s ease', transform: isHovered ? 'scale(1.06)' : 'scale(1)' }}
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', transition: 'transform .4s ease', transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
             />
-            <div style={{ position: 'absolute', inset: 0, background: isHovered ? 'rgba(7,7,15,.45)' : 'rgba(7,7,15,.65)', transition: 'background .3s ease' }} />
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: 'clamp(16px,3vw,36px)' }}>
-              <p style={{ fontFamily: FD, fontSize: 'clamp(18px,2.4vw,32px)', letterSpacing: .5, lineHeight: 1 }}>{label}</p>
+            <div style={{ position: 'absolute', inset: 0, background: isHovered ? 'rgba(7,7,15,.4)' : 'rgba(7,7,15,.6)', transition: 'background .3s ease' }} />
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', padding: '0 clamp(20px,3vw,36px)' }}>
+              <p style={{ fontFamily: FD, fontSize: 'clamp(22px,2.6vw,36px)', letterSpacing: .5, lineHeight: 1 }}>{label}</p>
             </div>
           </div>
         );
