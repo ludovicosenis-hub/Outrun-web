@@ -676,7 +676,7 @@ export default function Home() {
                   <p style={{ fontFamily: FB, fontSize: 'clamp(15px,1.4vw,17px)', color: 'rgba(255,255,255,.82)', lineHeight: 1.8 }}>
                     Outrun is live in the UK, Spain and Italy. Whether you're running London streets, Madrid parks, or Milan's navigli, your crew is here.
                   </p>
-                  <div>
+                  <div style={{ textAlign: 'center' }}>
                     <p style={{ fontFamily: FD, fontSize: 'clamp(64px,8vw,120px)', lineHeight: 1, letterSpacing: .5 }}>10,000+</p>
                     <p style={{ fontFamily: FB, fontSize: 'clamp(13px,1.2vw,16px)', color: 'rgba(255,255,255,.4)', letterSpacing: 3, textTransform: 'uppercase', marginTop: 10 }}>runs recorded</p>
                   </div>
