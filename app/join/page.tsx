@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import WaitlistModal from '../WaitlistModal';
 import SiteFooter from '../SiteFooter';
+import SiteNav from '../SiteNav';
 
 const FD = 'var(--font-bebas-var), Impact, sans-serif';
 const FB = 'var(--font-inter-var), -apple-system, sans-serif';
@@ -27,45 +28,6 @@ const AREAS = [
     desc: 'UI/UX, visual identity, content creation, and photography. We want Outrun to feel as good as it looks — from the app to the streets.',
   },
 ];
-
-function Nav({ onDownload }: { onDownload: () => void }) {
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 60);
-    window.addEventListener('scroll', fn, { passive: true });
-    return () => window.removeEventListener('scroll', fn);
-  }, []);
-  return (
-    <nav style={{
-      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 500,
-      height: 64, padding: '0 clamp(20px,4vw,48px)',
-      display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center',
-      background: scrolled ? 'rgba(7,7,15,.92)' : 'rgba(7,7,15,.6)',
-      backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
-      transition: 'background .4s',
-    }}>
-      <div className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-        {[['Join Us', '/join'], ['Privacy', '/privacy'], ['Terms', '/terms']].map(([l, href]) => (
-          <a key={l} href={href} style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,.55)', textDecoration: 'none', letterSpacing: .2, transition: 'color .2s' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,.55)')}>{l}</a>
-        ))}
-      </div>
-      <a href="/" style={{ fontFamily: FD, fontSize: 22, letterSpacing: 7, color: '#fff', textDecoration: 'none', justifySelf: 'center' }}>OUTRUN</a>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <button onClick={onDownload} style={{
-          background: '#fff', color: BG, borderRadius: 100, padding: '9px 24px',
-          fontSize: 13, fontFamily: FB, fontWeight: 700, letterSpacing: .3,
-          border: 'none', cursor: 'pointer', transition: 'opacity .2s',
-        }}
-          onMouseEnter={e => (e.currentTarget.style.opacity = '.8')}
-          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-          Download
-        </button>
-      </div>
-    </nav>
-  );
-}
 
 function ApplicationForm() {
   const [name, setName]       = useState('');
@@ -208,7 +170,7 @@ export default function JoinPage() {
   const [waitlistOpen, setWaitlistOpen] = useState(false);
   return (
     <>
-      <Nav onDownload={() => setWaitlistOpen(true)} />
+      <SiteNav onDownload={() => setWaitlistOpen(true)} />
       <WaitlistModal open={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
 
 

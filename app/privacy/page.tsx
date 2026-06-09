@@ -1,40 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import SiteFooter from '../SiteFooter';
+import SiteNav from '../SiteNav';
 
 const FD = 'var(--font-bebas-var), Impact, sans-serif';
 const FB = 'var(--font-inter-var), -apple-system, sans-serif';
 const BG = '#07070f';
-
-function Nav() {
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 60);
-    window.addEventListener('scroll', fn, { passive: true });
-    return () => window.removeEventListener('scroll', fn);
-  }, []);
-  return (
-    <nav style={{
-      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 500,
-      height: 64, padding: '0 clamp(20px,4vw,48px)',
-      display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center',
-      background: scrolled ? 'rgba(7,7,15,.92)' : 'rgba(7,7,15,.6)',
-      backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
-      transition: 'background .4s',
-    }}>
-      <div className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-        {[['Join Us', '/join'], ['Privacy', '/privacy'], ['Terms', '/terms']].map(([l, href]) => (
-          <a key={l} href={href} style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,.55)', textDecoration: 'none', letterSpacing: .2, transition: 'color .2s' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,.55)')}>{l}</a>
-        ))}
-      </div>
-      <a href="/" style={{ fontFamily: FD, fontSize: 22, letterSpacing: 7, color: '#fff', textDecoration: 'none', justifySelf: 'center' }}>OUTRUN</a>
-      <div />
-    </nav>
-  );
-}
 
 const SECTIONS = [
   {
@@ -82,7 +53,7 @@ const SECTIONS = [
 export default function PrivacyPage() {
   return (
     <>
-      <Nav />
+      <SiteNav />
       <section style={{ background: BG, minHeight: '100vh', padding: 'clamp(100px,12vw,140px) clamp(24px,5vw,72px) clamp(80px,10vw,120px)' }}>
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
 

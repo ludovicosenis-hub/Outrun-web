@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { motion, useScroll, useTransform, useInView, animate } from 'framer-motion';
 import WaitlistModal from './WaitlistModal';
 import SiteFooter from './SiteFooter';
+import SiteNav from './SiteNav';
 
 
 const FD   = 'var(--font-bebas-var), Impact, sans-serif';
@@ -50,109 +51,7 @@ const POSTERS = [
   { name: 'Night Run',               city: 'Rome',        date: 'FRI 11 Jul',  going: 19,  poster: '/events/poster_nightrunners.jpeg' },
 ];
 
-/* ─── Nav ───────────────────────────────────────────────────── */
-function Nav({ onDownload }: { onDownload: () => void }) {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 60);
-    window.addEventListener('scroll', fn, { passive: true });
-    return () => window.removeEventListener('scroll', fn);
-  }, []);
-
-  useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [menuOpen]);
-
-  return (
-    <>
-      <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 500,
-        height: 64, padding: '0 clamp(20px,4vw,48px)',
-        display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center',
-        transition: 'background .5s, backdrop-filter .5s',
-        background: scrolled || menuOpen ? 'rgba(7,7,15,.95)' : 'transparent',
-        backdropFilter: scrolled || menuOpen ? 'blur(20px)' : 'none',
-        WebkitBackdropFilter: scrolled || menuOpen ? 'blur(20px)' : 'none',
-      }}>
-        {/* Left — logo on mobile, links on desktop */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-          <a href="/" className="mobile-show" style={{ fontFamily: FD, fontSize: 20, letterSpacing: 6, color: '#fff', textDecoration: 'none', display: 'none' }}>OUTRUN</a>
-          <div className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-            {[['Join Us', '/join'], ['Privacy', '/privacy'], ['Terms', '/terms']].map(([l, href]) => (
-              <a key={l} href={href} style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,.55)', textDecoration: 'none', letterSpacing: .2, transition: 'color .2s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,.55)')}>{l}</a>
-            ))}
-          </div>
-        </div>
-
-        {/* Center logo — desktop only, hidden until scrolled */}
-        <a href="/" className="mobile-hide" style={{ fontFamily: FD, fontSize: 22, letterSpacing: 7, color: '#fff', textDecoration: 'none', justifySelf: 'center', opacity: scrolled ? 1 : 0, transition: 'opacity .4s' }}>OUTRUN</a>
-
-        {/* Right */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'flex-end' }}>
-          <button onClick={onDownload} className="mobile-hide" style={{
-            background: '#fff', color: BG, borderRadius: 100, padding: '9px 24px',
-            fontSize: 13, fontFamily: FB, fontWeight: 700, letterSpacing: .3,
-            border: 'none', cursor: 'pointer', transition: 'opacity .2s',
-          }}
-            onMouseEnter={e => (e.currentTarget.style.opacity = '.8')}
-            onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-            Download
-          </button>
-          {/* Hamburger — mobile only */}
-          <button
-            className="mobile-show"
-            onClick={() => setMenuOpen(o => !o)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, display: 'none', flexDirection: 'column', gap: 5 }}>
-            <span style={{ display: 'block', width: 22, height: 1.5, background: '#fff', transition: 'transform .25s, opacity .25s', transform: menuOpen ? 'translateY(6.5px) rotate(45deg)' : 'none' }} />
-            <span style={{ display: 'block', width: 22, height: 1.5, background: '#fff', transition: 'opacity .25s', opacity: menuOpen ? 0 : 1 }} />
-            <span style={{ display: 'block', width: 22, height: 1.5, background: '#fff', transition: 'transform .25s, opacity .25s', transform: menuOpen ? 'translateY(-6.5px) rotate(-45deg)' : 'none' }} />
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile drawer */}
-      <div style={{
-        position: 'fixed', inset: 0, zIndex: 490,
-        background: 'rgba(7,7,15,.97)',
-        display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 0,
-        transition: 'opacity .3s, transform .3s',
-        opacity: menuOpen ? 1 : 0,
-        transform: menuOpen ? 'translateY(0)' : 'translateY(-12px)',
-        pointerEvents: menuOpen ? 'auto' : 'none',
-      }}>
-        {[
-          { href: '/join', label: 'Join Us' },
-          { href: '/privacy', label: 'Privacy' },
-          { href: '/terms', label: 'Terms' },
-        ].map(({ href, label }) => (
-          <a key={href} href={href} onClick={() => setMenuOpen(false)}
-            style={{
-              fontFamily: FD, fontSize: 48, letterSpacing: 2, color: '#fff',
-              textDecoration: 'none', padding: '16px 0',
-              transition: 'opacity .2s',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.opacity = '.5')}
-            onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-            {label}
-          </a>
-        ))}
-        <button onClick={() => { setMenuOpen(false); onDownload(); }} style={{
-          marginTop: 32,
-          background: '#fff', color: BG, borderRadius: 100, padding: '16px 40px',
-          fontSize: 15, fontFamily: FB, fontWeight: 800, letterSpacing: .2,
-          border: 'none', cursor: 'pointer',
-        }}>
-          Download
-        </button>
-      </div>
-    </>
-  );
-}
 
 /* ─── Phone mockup with live feed ───────────────────────────── */
 function PhoneFeed() {
@@ -571,7 +470,7 @@ export default function Home() {
 
   return (
     <>
-      <Nav onDownload={() => setWaitlistOpen(true)} />
+      <SiteNav onDownload={() => setWaitlistOpen(true)} logoFadesIn />
       <WaitlistModal open={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
 
         {/* ══════════════════════════════════════════════
@@ -624,26 +523,29 @@ export default function Home() {
           <div className="who-grid" style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }}>
 
           {/* Left — photo grid */}
-          <Reveal y={32}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6 }}>
-              {[
-                '/community1.jpg', '/photo-action.jpeg', '/community2.jpg',
-                '/photo-jump.jpeg', '/community3.jpg',  '/community4.jpg',
-              ].map((src, i) => (
-                <div key={i} style={{ aspectRatio: '3/4', borderRadius: 12, overflow: 'hidden' }}>
-                  <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform .5s ease', filter: 'brightness(0.92)' }}
-                    onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.04)')}
-                    onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')} />
-                </div>
-              ))}
-            </div>
-          </Reveal>
+          <div className="mobile-order-2">
+            <Reveal y={32}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6 }}>
+                {[
+                  '/community1.jpg', '/photo-action.jpeg', '/community2.jpg',
+                  '/photo-jump.jpeg', '/community3.jpg',  '/community4.jpg',
+                ].map((src, i) => (
+                  <div key={i} style={{ aspectRatio: '3/4', borderRadius: 12, overflow: 'hidden' }}>
+                    <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform .5s ease', filter: 'brightness(0.92)' }}
+                      onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.04)')}
+                      onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')} />
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+          </div>
 
           {/* Right — manifesto text */}
+          <div className="mobile-order-1">
           <Reveal delay={.15} y={24}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
               <h2 style={{ fontFamily: FD, fontSize: 'clamp(44px,5.5vw,72px)', lineHeight: .88, letterSpacing: .5 }}>
-                A NEW<br />SOCIAL<br />FOR RUNNERS.
+                A NEW SOCIAL FOR RUNNERS.
               </h2>
               <p style={{ fontFamily: FB, fontSize: 'clamp(15px,1.4vw,17px)', color: 'rgba(255,255,255,.82)', lineHeight: 1.8 }}>
                 Outrun is not a fitness app. It's a social network built around the run — where your miles are content, your crew is your community, and every km matters.
@@ -653,8 +555,9 @@ export default function Home() {
               </p>
             </div>
           </Reveal>
-
           </div>
+
+          </div>{/* end who-grid */}
         </div>
       </section>
 
