@@ -349,8 +349,8 @@ function PhoneMobileCarousel() {
       {screens.map((src, i) => (
         <div key={i} style={{
           flexShrink: 0,
-          width: '70vw',
-          maxWidth: 260,
+          width: '88vw',
+          maxWidth: 320,
           scrollSnapAlign: 'center',
           borderRadius: 40,
           background: '#000',
@@ -631,7 +631,7 @@ export default function Home() {
               <Reveal delay={.15} y={24}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                   <h2 style={{ fontFamily: FD, fontSize: 'clamp(44px,5.5vw,72px)', lineHeight: .88, letterSpacing: .5 }}>
-                    THE FIRST RUNNING APP THAT'S TRULY SOCIAL.
+                    THE FIRST RUNNING APP<br />THAT'S TRULY SOCIAL.
                   </h2>
                   <p style={{ fontFamily: FB, fontSize: 'clamp(15px,1.4vw,17px)', color: 'rgba(255,255,255,.82)', lineHeight: 1.8 }}>
                     Interact with friends on the best running feed. Track your runs, dive into detailed stats, and find run clubs around you to join.
@@ -662,24 +662,7 @@ export default function Home() {
             </div>
           </Reveal>
 
-          <div className="who-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center', marginBottom: 'clamp(32px,4vw,48px)' }}>
-
-            <div className="mobile-order-1">
-              <Reveal y={24}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-                  <h2 style={{ fontFamily: FD, fontSize: 'clamp(44px,5.5vw,72px)', lineHeight: .88, letterSpacing: .5 }}>
-                    WE RUN TOGETHER.
-                  </h2>
-                  <p style={{ fontFamily: FB, fontSize: 'clamp(15px,1.4vw,17px)', color: 'rgba(255,255,255,.82)', lineHeight: 1.8 }}>
-                    Outrun is live in the UK, Spain and Italy. Whether you're running London streets, Madrid parks, or Milan's navigli, your crew is here.
-                  </p>
-                  <div>
-                    <p style={{ fontFamily: FD, fontSize: 'clamp(44px,5vw,64px)', lineHeight: 1, letterSpacing: .5 }}>10,000+</p>
-                    <p style={{ fontFamily: FB, fontSize: 'clamp(12px,1vw,14px)', color: 'rgba(255,255,255,.4)', letterSpacing: 2, textTransform: 'uppercase', marginTop: 6 }}>runs recorded</p>
-                  </div>
-                </div>
-              </Reveal>
-            </div>
+          <div className="who-grid" style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center', marginBottom: 'clamp(40px,5vw,64px)' }}>
 
             <div className="mobile-order-2">
               <Reveal y={32}>
@@ -687,7 +670,27 @@ export default function Home() {
               </Reveal>
             </div>
 
+            <div className="mobile-order-1">
+              <Reveal delay={.15} y={24}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                  <h2 style={{ fontFamily: FD, fontSize: 'clamp(44px,5.5vw,72px)', lineHeight: .88, letterSpacing: .5 }}>
+                    WE RUN TOGETHER.
+                  </h2>
+                  <p style={{ fontFamily: FB, fontSize: 'clamp(15px,1.4vw,17px)', color: 'rgba(255,255,255,.82)', lineHeight: 1.8 }}>
+                    Outrun is live in the UK, Spain and Italy. Whether you're running London streets, Madrid parks, or Milan's navigli, your crew is here.
+                  </p>
+                </div>
+              </Reveal>
+            </div>
+
           </div>
+
+          <Reveal y={16}>
+            <div style={{ textAlign: 'center', padding: 'clamp(24px,4vw,40px) 0' }}>
+              <p style={{ fontFamily: FD, fontSize: 'clamp(64px,8vw,120px)', lineHeight: 1, letterSpacing: .5 }}>10,000+</p>
+              <p style={{ fontFamily: FB, fontSize: 'clamp(13px,1.2vw,16px)', color: 'rgba(255,255,255,.4)', letterSpacing: 3, textTransform: 'uppercase', marginTop: 10 }}>runs recorded</p>
+            </div>
+          </Reveal>
 
         </div>
       </section>
