@@ -329,6 +329,45 @@ function PhoneStack() {
   );
 }
 
+/* ─── Mobile phone carousel (swipe, all 3 screens) ──────────── */
+function PhoneMobileCarousel() {
+  const screens = ['/app2.jpg', '/app1.jpg', '/app3.jpg'];
+  return (
+    <div style={{
+      overflowX: 'auto',
+      scrollSnapType: 'x mandatory',
+      display: 'flex',
+      gap: 16,
+      paddingLeft: 24,
+      paddingRight: 24,
+      paddingBottom: 8,
+      margin: '0 -24px',
+      scrollbarWidth: 'none',
+      msOverflowStyle: 'none',
+      WebkitOverflowScrolling: 'touch',
+    } as React.CSSProperties}>
+      {screens.map((src, i) => (
+        <div key={i} style={{
+          flexShrink: 0,
+          width: '70vw',
+          maxWidth: 260,
+          scrollSnapAlign: 'center',
+          borderRadius: 40,
+          background: '#000',
+          border: '1.5px solid rgba(255,255,255,.15)',
+          boxShadow: '0 24px 60px rgba(0,0,0,.85)',
+          overflow: 'hidden',
+          aspectRatio: '9/19.5',
+          position: 'relative',
+        }}>
+          <div style={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', width: 60, height: 18, background: '#000', borderRadius: 20, zIndex: 10 }} />
+          <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* ─── Auto-scroll poster strip ───────────────────────────────── */
 function PosterStrip({ dir }: { dir: 'left' | 'right' }) {
   const items = [...POSTERS, ...POSTERS];
@@ -578,22 +617,30 @@ export default function Home() {
           <div className="who-grid" style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }}>
 
             <div className="mobile-order-2">
-              <Reveal y={32}>
-                <PhoneStack />
-              </Reveal>
+              {/* Desktop: three phones overlapping */}
+              <div className="mobile-hide">
+                <Reveal y={32}><PhoneStack /></Reveal>
+              </div>
+              {/* Mobile: horizontal swipe carousel */}
+              <div className="mobile-show" style={{ display: 'none', paddingTop: 8 }}>
+                <PhoneMobileCarousel />
+              </div>
             </div>
 
             <div className="mobile-order-1">
-            <Reveal delay={.15} y={24}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-                <h2 style={{ fontFamily: FD, fontSize: 'clamp(36px,4.5vw,60px)', lineHeight: .88, letterSpacing: .5 }}>
-                  THE FIRST<br />RUNNING APP<br />THAT'S TRULY<br />SOCIAL.
-                </h2>
-                <p style={{ fontFamily: FB, fontSize: 'clamp(14px,1.3vw,16px)', color: 'rgba(255,255,255,.82)', lineHeight: 1.8 }}>
-                  Interact with friends on the best running feed. Track your runs, dive into detailed stats, and find run clubs around you to join.
-                </p>
-              </div>
-            </Reveal>
+              <Reveal delay={.15} y={24}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                  <h2 style={{ fontFamily: FD, fontSize: 'clamp(44px,5.5vw,72px)', lineHeight: .88, letterSpacing: .5 }}>
+                    THE FIRST RUNNING APP THAT'S TRULY SOCIAL.
+                  </h2>
+                  <p style={{ fontFamily: FB, fontSize: 'clamp(15px,1.4vw,17px)', color: 'rgba(255,255,255,.82)', lineHeight: 1.8 }}>
+                    Interact with friends on the best running feed. Track your runs, dive into detailed stats, and find run clubs around you to join.
+                  </p>
+                  <p style={{ fontFamily: FB, fontSize: 'clamp(14px,1.2vw,15px)', color: 'rgba(255,255,255,.42)', lineHeight: 1.8 }}>
+                    Every run you record becomes part of your story — and your friends' feed. Outrun turns solo miles into shared moments.
+                  </p>
+                </div>
+              </Reveal>
             </div>
 
           </div>
@@ -604,29 +651,43 @@ export default function Home() {
       {/* ══════════════════════════════════════════════
           3. WHERE WE RUN — flag panels
       ══════════════════════════════════════════════ */}
-      <section id="where-we-run" style={{ background: BG, height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 clamp(24px,5vw,72px)' }}>
+      <section id="where-we-run" style={{ background: BG, minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 'clamp(80px,10vw,120px) clamp(24px,5vw,72px)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', width: '100%' }}>
 
           <Reveal>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 'clamp(24px,3vw,36px)', borderTop: '1px solid rgba(255,255,255,.12)', paddingTop: 22 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 'clamp(24px,3vw,40px)', borderTop: '1px solid rgba(255,255,255,.12)', paddingTop: 22 }}>
               <span style={{ fontFamily: FD, fontSize: 'clamp(18px,2vw,24px)', letterSpacing: 3, color: 'rgba(255,255,255,.5)' }}>03</span>
               <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,.2)', flexShrink: 0 }} />
               <span style={{ fontFamily: FD, fontSize: 'clamp(16px,1.8vw,22px)', letterSpacing: 4, color: 'rgba(255,255,255,.45)', textTransform: 'uppercase' }}>Where We Run</span>
             </div>
           </Reveal>
 
-          <Reveal y={16}>
-            <div style={{ marginBottom: 'clamp(36px,5vw,56px)', textAlign: 'center' }}>
-              <p style={{ fontFamily: FD, fontSize: 'clamp(48px,6vw,88px)', lineHeight: 1, letterSpacing: .5 }}>
-                10,000+
-              </p>
-              <p style={{ fontFamily: FB, fontSize: 'clamp(15px,1.5vw,18px)', color: 'rgba(255,255,255,.5)', letterSpacing: 2, textTransform: 'uppercase', marginTop: 12 }}>
-                runs recorded
-              </p>
-            </div>
-          </Reveal>
+          <div className="who-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center', marginBottom: 'clamp(32px,4vw,48px)' }}>
 
-          <FlagPanels />
+            <div className="mobile-order-1">
+              <Reveal y={24}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                  <h2 style={{ fontFamily: FD, fontSize: 'clamp(44px,5.5vw,72px)', lineHeight: .88, letterSpacing: .5 }}>
+                    WE RUN TOGETHER.
+                  </h2>
+                  <p style={{ fontFamily: FB, fontSize: 'clamp(15px,1.4vw,17px)', color: 'rgba(255,255,255,.82)', lineHeight: 1.8 }}>
+                    Outrun is live in the UK, Spain and Italy. Whether you're running London streets, Madrid parks, or Milan's navigli, your crew is here.
+                  </p>
+                  <div>
+                    <p style={{ fontFamily: FD, fontSize: 'clamp(44px,5vw,64px)', lineHeight: 1, letterSpacing: .5 }}>10,000+</p>
+                    <p style={{ fontFamily: FB, fontSize: 'clamp(12px,1vw,14px)', color: 'rgba(255,255,255,.4)', letterSpacing: 2, textTransform: 'uppercase', marginTop: 6 }}>runs recorded</p>
+                  </div>
+                </div>
+              </Reveal>
+            </div>
+
+            <div className="mobile-order-2">
+              <Reveal y={32}>
+                <FlagPanels />
+              </Reveal>
+            </div>
+
+          </div>
 
         </div>
       </section>
