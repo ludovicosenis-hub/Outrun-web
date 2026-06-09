@@ -331,7 +331,7 @@ function PhoneStack() {
 
 /* ─── Mobile phone carousel (swipe, all 3 screens) ──────────── */
 function PhoneMobileCarousel() {
-  const screens = ['/app2.jpg', '/app1.jpg', '/app3.jpg'];
+  const screens = ['/app1.jpg', '/app2.jpg', '/app3.jpg'];
   return (
     <div style={{
       overflowX: 'auto',
