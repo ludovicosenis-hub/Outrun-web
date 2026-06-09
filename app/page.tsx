@@ -338,10 +338,7 @@ function PhoneMobileCarousel() {
       scrollSnapType: 'x mandatory',
       display: 'flex',
       gap: 16,
-      paddingLeft: 24,
-      paddingRight: 24,
-      paddingBottom: 8,
-      margin: '0 -24px',
+      padding: '4px 24px 16px',
       scrollbarWidth: 'none',
       msOverflowStyle: 'none',
       WebkitOverflowScrolling: 'touch',
@@ -349,8 +346,8 @@ function PhoneMobileCarousel() {
       {screens.map((src, i) => (
         <div key={i} style={{
           flexShrink: 0,
-          width: '88vw',
-          maxWidth: 320,
+          width: '82vw',
+          maxWidth: 300,
           scrollSnapAlign: 'center',
           borderRadius: 40,
           background: '#000',
@@ -616,18 +613,13 @@ export default function Home() {
 
           <div className="who-grid" style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }}>
 
-            <div className="mobile-order-2">
-              {/* Desktop: three phones overlapping */}
-              <div className="mobile-hide">
-                <Reveal y={32}><PhoneStack /></Reveal>
-              </div>
-              {/* Mobile: horizontal swipe carousel */}
-              <div className="mobile-show" style={{ display: 'none', paddingTop: 8 }}>
-                <PhoneMobileCarousel />
-              </div>
+            {/* Left: phones — desktop only */}
+            <div className="mobile-hide">
+              <Reveal y={32}><PhoneStack /></Reveal>
             </div>
 
-            <div className="mobile-order-1">
+            {/* Right: text — full-width on mobile */}
+            <div>
               <Reveal delay={.15} y={24}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                   <h2 style={{ fontFamily: FD, fontSize: 'clamp(44px,5.5vw,72px)', lineHeight: .88, letterSpacing: .5 }}>
@@ -643,6 +635,11 @@ export default function Home() {
               </Reveal>
             </div>
 
+          </div>
+
+          {/* Mobile: carousel below text, outside the grid */}
+          <div className="mobile-show" style={{ display: 'none', marginTop: 40 }}>
+            <PhoneMobileCarousel />
           </div>
 
         </div>
