@@ -256,7 +256,7 @@ function FlagPanels() {
               borderRadius: 16,
               overflow: 'hidden',
               position: 'relative',
-              height: 'clamp(88px,9vw,120px)',
+              height: 'clamp(140px,14vw,190px)',
               cursor: 'pointer',
               transform: isHovered ? 'scale(1.02) translateY(-3px)' : 'scale(1)',
               transition: 'transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease',
