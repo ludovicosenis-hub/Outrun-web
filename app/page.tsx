@@ -693,7 +693,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════
           4. FAQ + FOOTER
       ══════════════════════════════════════════════ */}
-      <section id="faq" style={{ background: BG, height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 'clamp(32px,4vw,56px) clamp(24px,5vw,72px)' }}>
+      <section id="faq" style={{ background: BG, padding: 'clamp(32px,4vw,56px) clamp(24px,5vw,72px) clamp(48px,6vw,72px)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', width: '100%' }}>
 
           <Reveal>
