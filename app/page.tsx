@@ -624,7 +624,7 @@ export default function Home() {
               <Reveal delay={.15} y={24}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                   <h2 style={{ fontFamily: FD, fontSize: 'clamp(44px,5.5vw,72px)', lineHeight: .88, letterSpacing: .5 }}>
-                    THE FIRST RUNNING APP<br />THAT'S TRULY SOCIAL.
+                    TRULY SOCIAL.
                   </h2>
                   <p style={{ fontFamily: FB, fontSize: 'clamp(15px,1.4vw,17px)', color: 'rgba(255,255,255,.82)', lineHeight: 1.8 }}>
                     Interact with friends on the best running feed. Track your runs, dive into detailed stats, and find run clubs around you to join.
