@@ -57,18 +57,29 @@ export default function SiteNav({ onDownload, logoFadesIn = false }: SiteNavProp
         {/* Desktop center logo */}
         <a href="/" className="mobile-hide" style={{ fontFamily: FD, fontSize: 22, letterSpacing: 7, color: '#fff', textDecoration: 'none', position: 'absolute', left: '50%', transform: 'translateX(-50%)', opacity: logoVisible ? 1 : 0, transition: 'opacity .4s' }}>OUTRUN</a>
 
-        {/* Desktop: Download | Mobile: Hamburger */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        {/* Desktop: Download | Mobile: Download + Hamburger */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           {onDownload && (
-            <button onClick={onDownload} className="mobile-hide" style={{
-              background: '#fff', color: BG, borderRadius: 100, padding: '9px 24px',
-              fontSize: 13, fontFamily: FB, fontWeight: 700, letterSpacing: .3,
-              border: 'none', cursor: 'pointer', transition: 'opacity .2s',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '.8')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-              Download
-            </button>
+            <>
+              {/* Desktop Download */}
+              <button onClick={onDownload} className="mobile-hide" style={{
+                background: '#fff', color: BG, borderRadius: 100, padding: '9px 24px',
+                fontSize: 13, fontFamily: FB, fontWeight: 700, letterSpacing: .3,
+                border: 'none', cursor: 'pointer', transition: 'opacity .2s',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '.8')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                Download
+              </button>
+              {/* Mobile Download — always visible in nav */}
+              <button onClick={onDownload} className="mobile-show" style={{
+                display: 'none', background: '#fff', color: BG, borderRadius: 100,
+                padding: '8px 18px', fontSize: 12, fontFamily: FB, fontWeight: 700,
+                letterSpacing: .3, border: 'none', cursor: 'pointer',
+              }}>
+                Download
+              </button>
+            </>
           )}
           {/* Hamburger */}
           <button
