@@ -341,7 +341,7 @@ function FlagPanels() {
     { code: 'es', label: 'Spain',          sub: 'Madrid · Barcelona' },
   ];
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, height: 'clamp(260px,28vw,380px)' }}>
+    <div className="flags-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, height: 'clamp(260px,28vw,380px)' }}>
       {flags.map(({ code, label, sub }, i) => {
         const isHovered = hovered === i;
         return (
@@ -360,7 +360,7 @@ function FlagPanels() {
             }}
           >
             <img
-              src={`https://flagcdn.com/w1280/${code}.png`}
+              src={`https://flagcdn.com/w640/${code}.png`}
               alt={label}
               style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', transition: 'transform .4s ease', transform: isHovered ? 'scale(1.06)' : 'scale(1)' }}
             />
@@ -383,13 +383,15 @@ function PhoneStack() {
   const baseZ = [2, 3, 1];
 
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-end', height: 'clamp(480px,52vw,660px)' }}>
+    <div className="phone-stack-wrap" style={{ display: 'flex', alignItems: 'flex-end', height: 'clamp(480px,52vw,660px)' }}>
       {screens.map((src, i) => {
         const isHovered = hovered === i;
         const otherHovered = hovered !== null && hovered !== i;
+        const isCenter = i === 1;
         return (
           <div
             key={i}
+            className={isCenter ? 'phone-center' : 'phone-side'}
             onMouseEnter={() => setHovered(i)}
             onMouseLeave={() => setHovered(null)}
             style={{
@@ -605,7 +607,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════
           2. MANIFESTO — photo grid + statement
       ══════════════════════════════════════════════ */}
-      <section id="who-we-are" style={{ background: BG, height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 clamp(24px,5vw,72px)' }}>
+      <section id="who-we-are" style={{ background: BG, minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 'clamp(80px,10vw,120px) clamp(24px,5vw,72px)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
 
           <Reveal>
@@ -616,7 +618,7 @@ export default function Home() {
             </div>
           </Reveal>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }}>
+          <div className="who-grid" style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }}>
 
           {/* Left — photo grid */}
           <Reveal y={32}>
