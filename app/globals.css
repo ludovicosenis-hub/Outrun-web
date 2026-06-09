@@ -25,8 +25,12 @@ body {
 /* mobile responsive */
 @media (max-width: 768px) {
   .mobile-hide { display: none !important; }
+  .mobile-show { display: flex !important; }
   .mobile-stack { grid-template-columns: 1fr !important; }
   .mobile-col { flex-direction: column !important; }
+}
+@media (min-width: 769px) {
+  .mobile-show { display: none !important; }
 }
 
 /* poster auto-scroll */

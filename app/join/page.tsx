@@ -2,14 +2,33 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import WaitlistModal from '../WaitlistModal';
+import SiteFooter from '../SiteFooter';
 
 const FD = 'var(--font-bebas-var), Impact, sans-serif';
 const FB = 'var(--font-inter-var), -apple-system, sans-serif';
 const BG = '#07070f';
 
-const AREAS = ['Software & Engineering', 'Growth & Marketing', 'Community & Operations', 'Brand & Design'];
+const AREAS = [
+  {
+    title: 'Software & Engineering',
+    desc: 'Backend, mobile (iOS & Android), frontend, and infrastructure. We move fast and build things that matter — from the social feed to GPS tracking to real-time notifications.',
+  },
+  {
+    title: 'Growth & Marketing',
+    desc: 'User acquisition, social media, partnerships, and performance analytics. Help us grow the Outrun community across Europe and beyond.',
+  },
+  {
+    title: 'Community & Operations',
+    desc: "Run club relations, event coordination, city expansion, and day-to-day community management. You'll be the heartbeat of every city we launch in.",
+  },
+  {
+    title: 'Brand & Design',
+    desc: 'UI/UX, visual identity, content creation, and photography. We want Outrun to feel as good as it looks — from the app to the streets.',
+  },
+];
 
-function Nav() {
+function Nav({ onDownload }: { onDownload: () => void }) {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 60);
@@ -20,29 +39,30 @@ function Nav() {
     <nav style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 500,
       height: 64, padding: '0 clamp(20px,4vw,48px)',
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center',
       background: scrolled ? 'rgba(7,7,15,.92)' : 'rgba(7,7,15,.6)',
       backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
       transition: 'background .4s',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-        <a href="/" style={{ fontFamily: FD, fontSize: 20, letterSpacing: 6, color: '#fff', textDecoration: 'none' }}>OUTRUN</a>
-        <a href="/join" className="mobile-hide" style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: '#fff', textDecoration: 'none', letterSpacing: .2 }}>Join Us</a>
-        <a href="/contact" className="mobile-hide" style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,.55)', textDecoration: 'none', letterSpacing: .2, transition: 'color .2s' }}
-          onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,.55)')}>
-          Contact
-        </a>
+      <div className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+        {[['Join Us', '/join'], ['Privacy', '/privacy'], ['Terms', '/terms']].map(([l, href]) => (
+          <a key={l} href={href} style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,.55)', textDecoration: 'none', letterSpacing: .2, transition: 'color .2s' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,.55)')}>{l}</a>
+        ))}
       </div>
-      <a href="https://apps.apple.com" style={{
-        background: '#fff', color: BG, borderRadius: 100, padding: '9px 24px',
-        fontSize: 13, fontFamily: FB, fontWeight: 700, letterSpacing: .3,
-        textDecoration: 'none', transition: 'opacity .2s',
-      }}
-        onMouseEnter={e => (e.currentTarget.style.opacity = '.8')}
-        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-        Download
-      </a>
+      <a href="/" style={{ fontFamily: FD, fontSize: 22, letterSpacing: 7, color: '#fff', textDecoration: 'none', justifySelf: 'center' }}>OUTRUN</a>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <button onClick={onDownload} style={{
+          background: '#fff', color: BG, borderRadius: 100, padding: '9px 24px',
+          fontSize: 13, fontFamily: FB, fontWeight: 700, letterSpacing: .3,
+          border: 'none', cursor: 'pointer', transition: 'opacity .2s',
+        }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '.8')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+          Download
+        </button>
+      </div>
     </nav>
   );
 }
@@ -71,7 +91,7 @@ function ApplicationForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const body = `Name: ${name} ${surname}\nEmail: ${email}\n\n${message ? `Message:\n${message}\n\n` : ''}CV: ${cvName || 'See attached'}`;
-    window.location.href = `mailto:info@outrun.com?subject=Outrun Application — ${name} ${surname}&body=${encodeURIComponent(body)}`;
+    window.location.href = `mailto:info@outrunldn.com?subject=Outrun Application — ${name} ${surname}&body=${encodeURIComponent(body)}`;
   };
 
   return (
@@ -146,114 +166,94 @@ function ApplicationForm() {
   );
 }
 
+function AreaBoxes() {
+  const [open, setOpen] = useState<number | null>(null);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {AREAS.map(({ title, desc }, i) => (
+        <motion.div key={title}
+          initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: .6, delay: i * .07 }}
+          onClick={() => setOpen(open === i ? null : i)}
+          style={{
+            borderRadius: 16,
+            border: `1px solid ${open === i ? 'rgba(255,255,255,.18)' : 'rgba(255,255,255,.08)'}`,
+            background: open === i ? 'rgba(255,255,255,.07)' : 'rgba(255,255,255,.03)',
+            padding: 'clamp(20px,3vw,32px)',
+            cursor: 'pointer',
+            transition: 'background .3s, border-color .3s',
+          }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <span style={{ fontFamily: FD, fontSize: 13, letterSpacing: 2, color: 'rgba(255,255,255,.2)', flexShrink: 0 }}>0{i + 1}</span>
+            <span style={{ fontFamily: FD, fontSize: 'clamp(20px,2.4vw,32px)', letterSpacing: .5 }}>{title}</span>
+          </div>
+          <div style={{
+            maxHeight: open === i ? 200 : 0,
+            overflow: 'hidden',
+            transition: 'max-height .45s ease',
+          }}>
+            <p style={{
+              fontFamily: FB, fontSize: 'clamp(13px,1.1vw,15px)',
+              color: 'rgba(255,255,255,.5)', lineHeight: 1.7,
+              marginTop: 16,
+            }}>{desc}</p>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 export default function JoinPage() {
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
   return (
     <>
-      <Nav />
+      <Nav onDownload={() => setWaitlistOpen(true)} />
+      <WaitlistModal open={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
 
-      {/* ── Hero ── */}
-      <section style={{ background: BG, padding: 'clamp(120px,14vw,160px) clamp(24px,5vw,72px) clamp(48px,6vw,72px)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div className="mobile-stack" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(40px,6vw,80px)', alignItems: 'start' }}>
-
-            {/* Left: text */}
-            <motion.div initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .9, ease: [.16,1,.3,1] }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, borderTop: '1px solid rgba(255,255,255,.12)', paddingTop: 22, marginBottom: 36 }}>
-                <span style={{ fontFamily: FD, fontSize: 'clamp(14px,1.6vw,20px)', letterSpacing: 4, color: 'rgba(255,255,255,.4)', textTransform: 'uppercase' }}>Careers</span>
-              </div>
-              <h1 style={{ fontFamily: FD, fontSize: 'clamp(64px,9vw,118px)', lineHeight: .86, letterSpacing: 1, marginBottom: 36 }}>
-                WE'RE<br />GROWING.<br />JOIN US.
-              </h1>
-              <p style={{ fontFamily: FB, fontSize: 'clamp(16px,1.5vw,18px)', color: 'rgba(255,255,255,.8)', lineHeight: 1.75, maxWidth: 460, marginBottom: 12 }}>
-                We're not looking for a specific skillset. We're looking for people who are genuinely committed, motivated, and believe in what we're building.
-              </p>
-              <p style={{ fontFamily: FB, fontSize: 'clamp(14px,1.2vw,15px)', color: 'rgba(255,255,255,.35)', lineHeight: 1.75, maxWidth: 420 }}>
-                If running, community, and building products people love gets you out of bed — we want to meet you.
-              </p>
-            </motion.div>
-
-            {/* Right: office photo */}
-            <motion.div initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .9, delay: .15, ease: [.16,1,.3,1] }}
-              style={{
-                borderRadius: 20, overflow: 'hidden',
-                border: '1px solid rgba(255,255,255,.08)',
-                boxShadow: '0 24px 64px rgba(0,0,0,.6)',
-                aspectRatio: '4/3',
-              }}>
-              <img src="/office.png" alt="Outrun HQ" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-            </motion.div>
-
-          </div>
-        </div>
-      </section>
 
       {/* ── Areas ── */}
-      <section style={{ background: BG, padding: '0 clamp(24px,5vw,72px) clamp(80px,10vw,112px)' }}>
+      <section style={{ background: BG, padding: 'clamp(100px,12vw,140px) clamp(24px,5vw,72px) clamp(80px,10vw,112px)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: .8 }}>
-            <h2 style={{ fontFamily: FB, fontSize: 'clamp(20px,2.2vw,26px)', fontWeight: 700, color: '#fff', marginBottom: 8 }}>
-              Areas we're hiring in
+            <h2 style={{ fontFamily: FD, fontSize: 'clamp(36px,4.5vw,60px)', lineHeight: .9, letterSpacing: .5, marginBottom: 12 }}>
+              AREAS WE'RE HIRING IN.
             </h2>
-            <p style={{ fontFamily: FB, fontSize: 'clamp(14px,1.3vw,16px)', color: 'rgba(255,255,255,.38)', marginBottom: 40 }}>
+            <p style={{ fontFamily: FB, fontSize: 'clamp(14px,1.3vw,16px)', color: 'rgba(255,255,255,.38)', marginBottom: 6 }}>
               Don't fit neatly into one? Apply anyway.
+            </p>
+            <p style={{ fontFamily: FB, fontSize: 'clamp(13px,1.1vw,15px)', color: 'rgba(255,255,255,.25)', marginBottom: 40 }}>
+              For anything else, reach us at{' '}
+              <a href="mailto:info@outrunldn.com" style={{ color: 'rgba(255,255,255,.5)', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,.2)' }}>info@outrunldn.com</a>
             </p>
           </motion.div>
 
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {AREAS.map((area, i) => (
-              <motion.div key={area}
-                initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }} transition={{ duration: .6, delay: i * .07 }}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: 'clamp(18px,2.5vw,26px) 0',
-                  borderBottom: '1px solid rgba(255,255,255,.08)',
-                  borderTop: i === 0 ? '1px solid rgba(255,255,255,.08)' : 'none',
-                }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-                  <span style={{ fontFamily: FD, fontSize: 14, letterSpacing: 2, color: 'rgba(255,255,255,.2)', width: 28 }}>
-                    0{i + 1}
-                  </span>
-                  <span style={{ fontFamily: FD, fontSize: 'clamp(24px,3vw,40px)', letterSpacing: .5, color: '#fff' }}>
-                    {area}
-                  </span>
-                </div>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-                </svg>
-              </motion.div>
-            ))}
-          </div>
+          <AreaBoxes />
         </div>
       </section>
 
       {/* ── Application form ── */}
       <section style={{ background: BG, padding: '0 clamp(24px,5vw,72px) clamp(96px,12vw,140px)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: .8 }}
-            style={{ textAlign: 'center' }}>
-            <h2 style={{ fontFamily: FD, fontSize: 'clamp(40px,5vw,64px)', lineHeight: .9, letterSpacing: .5, marginBottom: 16 }}>
+          <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: .7 }}
+            style={{
+              borderRadius: 16,
+              border: '1px solid rgba(255,255,255,.08)',
+              background: 'rgba(255,255,255,.03)',
+              padding: 'clamp(32px,4vw,56px)',
+            }}>
+            <h2 style={{ fontFamily: FD, fontSize: 'clamp(36px,4.5vw,60px)', lineHeight: .9, letterSpacing: .5, marginBottom: 10 }}>
               APPLY NOW.
             </h2>
-            <p style={{ fontFamily: FB, fontSize: 'clamp(15px,1.4vw,17px)', color: 'rgba(255,255,255,.45)', lineHeight: 1.75, marginBottom: 48, maxWidth: 520, margin: '0 auto 48px' }}>
+            <p style={{ fontFamily: FB, fontSize: 'clamp(13px,1.1vw,15px)', color: 'rgba(255,255,255,.38)', marginBottom: 40 }}>
               Tell us who you are. We read every single application.
             </p>
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: .85, delay: .1 }}
-            style={{ maxWidth: 640, margin: '0 auto' }}>
             <ApplicationForm />
           </motion.div>
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer style={{ background: BG, borderTop: '1px solid rgba(255,255,255,.05)', padding: '24px clamp(20px,4vw,56px)' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-          <span style={{ fontFamily: FD, fontSize: 14, letterSpacing: 5, color: 'rgba(255,255,255,.14)' }}>OUTRUN</span>
-          <span style={{ fontFamily: FB, fontSize: 11, color: 'rgba(255,255,255,.14)' }}>© {new Date().getFullYear()} Outrun. All rights reserved.</span>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   );
 }

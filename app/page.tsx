@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion, useScroll, useTransform, useInView, animate } from 'framer-motion';
+import WaitlistModal from './WaitlistModal';
+import SiteFooter from './SiteFooter';
 
 const MapClient = dynamic(() => import('./MapClient'), { ssr: false });
 
@@ -36,210 +38,390 @@ const DECK = [
 
 /* ─── event posters ─────────────────────────────────────────── */
 const POSTERS = [
-  { name: 'RunUnity × Cafe Nini',   city: 'Vienna',     date: 'SAT 6 Jun',   going: 38,  poster: '/events/event1.jpeg' },
-  { name: 'Gypsy Rabbit Social Run', city: 'Canterbury', date: 'THU 12 Jun',  going: 31,  poster: '/events/event2.jpeg' },
+  { name: 'RunUnity × Cafe Nini',   city: 'London',     date: 'SAT 14 Jun',  going: 38,  poster: '/events/event1.jpeg' },
+  { name: 'Gypsy Rabbit Social Run', city: 'Copenhagen', date: 'THU 12 Jun',  going: 31,  poster: '/events/event2.jpeg' },
   { name: 'REM: Run the Extra Mile', city: 'Milan',       date: 'SUN 14 Jun',  going: 26,  poster: '/events/event3.jpeg' },
   { name: 'B3TTER Run Club × Nike',  city: 'Madrid',      date: 'SAT 28 Nov',  going: 64,  poster: '/events/event4.jpeg' },
   { name: 'Rookie Wednesday Run',    city: 'Lisbon',      date: 'WED 17 Jun',  going: 34,  poster: '/events/event5.jpeg' },
   { name: 'Onemind Sunday Run',      city: 'Paris',       date: 'SUN 6 Jul',   going: 31,  poster: '/events/poster_onemind.jpeg' },
-  { name: 'Coffee Party Run & Rave', city: 'Shanghai',    date: 'FRI 20 Jun',  going: 58,  poster: '/events/poster_raveam.jpeg' },
+  { name: 'Coffee Party Run & Rave', city: 'Amsterdam',   date: 'FRI 20 Jun',  going: 58,  poster: '/events/poster_raveam.jpeg' },
   { name: 'HOKA Coffee Fest Run',    city: 'Rotterdam',   date: 'SAT 11 Oct',  going: 85,  poster: '/events/poster_rc010.jpeg' },
-  { name: 'Dreamers Morning Run',    city: 'San Antonio', date: 'FRI 19 Jun',  going: 22,  poster: '/events/poster_dreamers.jpeg' },
-  { name: 'BOMJA Saturday Run',      city: 'Minneapolis', date: 'SAT 23 May',  going: 47,  poster: '/events/poster_bomja.jpeg' },
-  { name: 'Night Run',               city: 'Kathmandu',   date: 'FRI 11 Jul',  going: 19,  poster: '/events/poster_nightrunners.jpeg' },
+  { name: 'Dreamers Morning Run',    city: 'Berlin',      date: 'FRI 19 Jun',  going: 22,  poster: '/events/poster_dreamers.jpeg' },
+  { name: 'BOMJA Saturday Run',      city: 'Barcelona',   date: 'SAT 14 Jun',  going: 47,  poster: '/events/poster_bomja.jpeg' },
+  { name: 'Night Run',               city: 'Rome',        date: 'FRI 11 Jul',  going: 19,  poster: '/events/poster_nightrunners.jpeg' },
 ];
 
 /* ─── Nav ───────────────────────────────────────────────────── */
-function Nav() {
+function Nav({ onDownload }: { onDownload: () => void }) {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 60);
     window.addEventListener('scroll', fn, { passive: true });
     return () => window.removeEventListener('scroll', fn);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
   return (
-    <nav style={{
-      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 500,
-      height: 64, padding: '0 clamp(20px,4vw,48px)',
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      transition: 'background .5s, backdrop-filter .5s',
-      background: scrolled ? 'rgba(7,7,15,.9)' : 'transparent',
-      backdropFilter: scrolled ? 'blur(20px)' : 'none',
-      WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-        <a href="/" style={{ fontFamily: FD, fontSize: 20, letterSpacing: 6, color: '#fff', textDecoration: 'none' }}>OUTRUN</a>
-        <a href="/join" className="mobile-hide" style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,.55)', textDecoration: 'none', letterSpacing: .2, transition: 'color .2s' }}
-          onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,.55)')}>
-          Join Us
-        </a>
-        <a href="/contact" className="mobile-hide" style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,.55)', textDecoration: 'none', letterSpacing: .2, transition: 'color .2s' }}
-          onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,.55)')}>
-          Contact
-        </a>
+    <>
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 500,
+        height: 64, padding: '0 clamp(20px,4vw,48px)',
+        display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center',
+        transition: 'background .5s, backdrop-filter .5s',
+        background: scrolled || menuOpen ? 'rgba(7,7,15,.95)' : 'transparent',
+        backdropFilter: scrolled || menuOpen ? 'blur(20px)' : 'none',
+        WebkitBackdropFilter: scrolled || menuOpen ? 'blur(20px)' : 'none',
+      }}>
+        {/* Left links */}
+        <div className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+          {[['Join Us', '/join'], ['Privacy', '/privacy'], ['Terms', '/terms']].map(([l, href]) => (
+            <a key={l} href={href} style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,.55)', textDecoration: 'none', letterSpacing: .2, transition: 'color .2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,.55)')}>{l}</a>
+          ))}
+        </div>
+
+        {/* Center logo — hidden until scrolled past hero */}
+        <a href="/" style={{ fontFamily: FD, fontSize: 22, letterSpacing: 7, color: '#fff', textDecoration: 'none', justifySelf: 'center', opacity: scrolled ? 1 : 0, transition: 'opacity .4s' }}>OUTRUN</a>
+
+        {/* Right */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'flex-end' }}>
+          <button onClick={onDownload} className="mobile-hide" style={{
+            background: '#fff', color: BG, borderRadius: 100, padding: '9px 24px',
+            fontSize: 13, fontFamily: FB, fontWeight: 700, letterSpacing: .3,
+            border: 'none', cursor: 'pointer', transition: 'opacity .2s',
+          }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '.8')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+            Download
+          </button>
+          {/* Hamburger — mobile only */}
+          <button
+            className="mobile-show"
+            onClick={() => setMenuOpen(o => !o)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, display: 'none', flexDirection: 'column', gap: 5 }}>
+            <span style={{ display: 'block', width: 22, height: 1.5, background: '#fff', transition: 'transform .25s, opacity .25s', transform: menuOpen ? 'translateY(6.5px) rotate(45deg)' : 'none' }} />
+            <span style={{ display: 'block', width: 22, height: 1.5, background: '#fff', transition: 'opacity .25s', opacity: menuOpen ? 0 : 1 }} />
+            <span style={{ display: 'block', width: 22, height: 1.5, background: '#fff', transition: 'transform .25s, opacity .25s', transform: menuOpen ? 'translateY(-6.5px) rotate(-45deg)' : 'none' }} />
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile drawer */}
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 490,
+        background: 'rgba(7,7,15,.97)',
+        display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 0,
+        transition: 'opacity .3s, transform .3s',
+        opacity: menuOpen ? 1 : 0,
+        transform: menuOpen ? 'translateY(0)' : 'translateY(-12px)',
+        pointerEvents: menuOpen ? 'auto' : 'none',
+      }}>
+        {[
+          { href: '/', label: 'Home' },
+          { href: '/join', label: 'Join Us' },
+        ].map(({ href, label }) => (
+          <a key={href} href={href} onClick={() => setMenuOpen(false)}
+            style={{
+              fontFamily: FD, fontSize: 48, letterSpacing: 2, color: '#fff',
+              textDecoration: 'none', padding: '16px 0',
+              transition: 'opacity .2s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '.5')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+            {label}
+          </a>
+        ))}
+        <button onClick={() => { setMenuOpen(false); onDownload(); }} style={{
+          marginTop: 32,
+          background: '#fff', color: BG, borderRadius: 100, padding: '16px 40px',
+          fontSize: 15, fontFamily: FB, fontWeight: 800, letterSpacing: .2,
+          border: 'none', cursor: 'pointer',
+        }}>
+          Download on App Store
+        </button>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-      <a href="https://apps.apple.com" style={{
-        background: '#fff', color: BG, borderRadius: 100, padding: '9px 24px',
-        fontSize: 13, fontFamily: FB, fontWeight: 700, letterSpacing: .3,
-        textDecoration: 'none', transition: 'opacity .2s',
-      }}
-        onMouseEnter={e => (e.currentTarget.style.opacity = '.8')}
-        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-        Download
-      </a>
-      </div>
-    </nav>
+    </>
   );
 }
 
 /* ─── Phone mockup with live feed ───────────────────────────── */
 function PhoneFeed() {
-  const cards = [...FEED, ...FEED];
-
-  // SVG icons — matches Ionicons style used in the real app
-  const IcoHeart = () => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-    </svg>
-  );
-  const IcoComment = () => (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-    </svg>
-  );
-  const IcoSmile = () => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-      <line x1="9" y1="9" x2="9.01" y2="9" strokeWidth="2.5"/>
-      <line x1="15" y1="9" x2="15.01" y2="9" strokeWidth="2.5"/>
-    </svg>
-  );
-  const IcoPlay = () => (
-    <svg width="10" height="10" viewBox="0 0 24 24" fill="rgba(255,255,255,0.85)">
-      <polygon points="5 3 19 12 5 21 5 3"/>
-    </svg>
-  );
 
   return (
     <div style={{
       width: 'clamp(220px,28vw,300px)',
       borderRadius: 44,
-      background: '#0a0a14',
+      background: '#000',
       border: '1.5px solid rgba(255,255,255,.12)',
       boxShadow: '0 48px 96px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.08)',
       overflow: 'hidden',
       position: 'relative',
-      aspectRatio: '9/19.5',
+      aspectRatio: '9/21',
       flexShrink: 0,
     }}>
       {/* Dynamic island */}
       <div style={{ position: 'absolute', top: 14, left: '50%', transform: 'translateX(-50%)', width: 88, height: 28, background: '#000', borderRadius: 20, zIndex: 20 }} />
 
       {/* Screen */}
-      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', paddingTop: 52 }}>
-        {/* Status bar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 18px 6px', fontFamily: FB, fontSize: 10, fontWeight: 600, color: '#fff', flexShrink: 0 }}>
-          <span>9:41</span>
-          <span style={{ letterSpacing: 1, fontFamily: FD, fontSize: 13 }}>OUTRUN</span>
-          <span style={{ opacity: .6, fontSize: 8 }}>●●●</span>
+      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', paddingTop: 44, background: '#000' }}>
+        {/* Feed — real app screen recording */}
+        <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+          <video
+            src="/feed-demo.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          />
+          {/* Cover the screen recording indicator at the top */}
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 28, background: '#000' }} />
         </div>
 
-        {/* Feed — auto-scrolling */}
-        <div style={{ flex: 1, overflow: 'hidden' }}>
-          <div className="feed-scroll" style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '4px 10px 0' }}>
-            {cards.map((f, i) => (
-              <div key={i} style={{
-                borderRadius: 14,
-                overflow: 'hidden',
-                flexShrink: 0,
-                border: '0.5px solid rgba(255,255,255,.08)',
-                boxShadow: '0 4px 16px rgba(0,0,0,.4)',
-              }}>
-                {/* Photo + floating user row */}
-                <div style={{ position: 'relative', height: 110 }}>
-                  <img src={f.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                  {/* Top gradient for avatar readability */}
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.08) 45%, transparent 100%)' }} />
-                  {/* Avatar + username + level + time */}
-                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, display: 'flex', alignItems: 'center', gap: 6, padding: '9px 10px 0' }}>
-                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: f.ac, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,.25)' }}>
-                      <span style={{ fontFamily: FB, fontSize: 8, fontWeight: 800, color: '#fff' }}>{f.init}</span>
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: FB, fontSize: 10, fontWeight: 800, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>{f.user}</div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginTop: 1 }}>
-                        <span style={{ fontFamily: FB, fontSize: 7, fontWeight: 700, color: AG, letterSpacing: .4 }}>LV.{f.lv}</span>
-                        <span style={{ fontFamily: FB, fontSize: 7, color: 'rgba(255,255,255,.5)' }}>· {f.ago}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+      </div>
+    </div>
+  );
+}
 
-                {/* Stats bar — KM | PACE /KM | TIME + play */}
-                <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,.08)' }}>
-                  <div style={{ flex: 1, display: 'flex', padding: '8px 0 8px 12px', gap: 0 }}>
-                    {[
-                      { val: f.km,   label: 'KM' },
-                      { val: f.pace, label: 'PACE /KM' },
-                      { val: f.dur,  label: 'TIME' },
-                    ].map(({ val, label }, j) => (
-                      <div key={j} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: j === 0 ? 'flex-start' : j === 1 ? 'center' : 'flex-end', paddingRight: j === 2 ? 8 : 0 }}>
-                        <span style={{ fontFamily: FB, fontSize: 14, fontWeight: 800, color: '#fff', letterSpacing: -.3, lineHeight: 1 }}>{val}</span>
-                        <span style={{ fontFamily: FB, fontSize: 6, fontWeight: 600, color: 'rgba(255,255,255,.3)', letterSpacing: .9, marginTop: 2, textTransform: 'uppercase' }}>{label}</span>
-                      </div>
-                    ))}
-                  </div>
-                  {/* Play button */}
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', border: '0.5px solid rgba(255,255,255,.2)', background: 'rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 10, flexShrink: 0 }}>
-                    <IcoPlay />
-                  </div>
-                </div>
+/* ─── Full-page scroll ───────────────────────────────────────── */
+function FullPageScroller({ children }: { children: React.ReactNode }) {
+  const [current, setCurrent] = useState(0);
+  const isScrolling = useRef(false);
+  const childArray = React.Children.toArray(children);
+  const total = childArray.length;
 
-                {/* Action bar — heart | comment | reaction + stacked faces */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(255,255,255,.08)', padding: '7px 12px 8px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <IcoHeart />
-                    {f.likes > 0 && <span style={{ fontFamily: FB, fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,.6)' }}>{f.likes}</span>}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <IcoComment />
-                    {f.cmts > 0 && <span style={{ fontFamily: FB, fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,.6)' }}>{f.cmts}</span>}
-                  </div>
-                  <IcoSmile />
-                  <div style={{ flex: 1 }} />
-                  {/* Stacked reaction faces — real photos */}
-                  {f.rxns.map((src, k) => (
-                    <div key={k} style={{ width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1.5px solid rgba(255,255,255,.22)', marginLeft: k > 0 ? -8 : 0, flexShrink: 0 }}>
-                      <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%' }} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+  useEffect(() => {
+    const go = (dir: 1 | -1) => {
+      if (isScrolling.current) return;
+      setCurrent(c => {
+        const next = c + dir;
+        if (next < 0 || next >= total) return c;
+        isScrolling.current = true;
+        setTimeout(() => { isScrolling.current = false; }, 950);
+        return next;
+      });
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      if (Math.abs(e.deltaY) < 10) return;
+      go(e.deltaY > 0 ? 1 : -1);
+    };
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowDown' || e.key === 'PageDown') go(1);
+      if (e.key === 'ArrowUp'   || e.key === 'PageUp')   go(-1);
+    };
+
+    let touchStart = 0;
+    const onTouchStart = (e: TouchEvent) => { touchStart = e.touches[0].clientY; };
+    const onTouchEnd   = (e: TouchEvent) => {
+      const diff = touchStart - e.changedTouches[0].clientY;
+      if (Math.abs(diff) > 50) go(diff > 0 ? 1 : -1);
+    };
+
+    window.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchend',   onTouchEnd,   { passive: true });
+    return () => {
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchend',   onTouchEnd);
+    };
+  }, [total]);
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, overflow: 'hidden' }}>
+      <div style={{
+        transform: `translateY(-${current * 100}vh)`,
+        transition: 'transform .9s cubic-bezier(.77,0,.175,1)',
+        willChange: 'transform',
+      }}>
+        {childArray.map((child, i) => (
+          <div key={i} style={{ height: '100vh', overflow: 'hidden' }}>
+            {child}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─── FAQ accordion ─────────────────────────────────────────── */
+const FAQS = [
+  {
+    q: 'What is Outrun?',
+    a: 'Outrun is the first running app built around your social life. Track your runs with GPS, share them with friends, react to their routes, and discover run clubs and events near you — all in one place.',
+  },
+  {
+    q: 'How does the feed work?',
+    a: 'Every run you record appears in your friends\' feed — with your route, pace, distance, and time. Other users can react with a selfie, leave a comment, or give you a like. Their runs show up in your feed too.',
+  },
+  {
+    q: 'How do I find and join a run club?',
+    a: 'Open the Clubs tab and browse run clubs in your city. You can see their upcoming events, buy tickets directly in the app, and your ticket is ready to scan at the door.',
+  },
+  {
+    q: 'Where is Outrun available?',
+    a: 'At launch, Outrun will be available in the UK, Spain, and Italy. We plan to expand to every country shortly after — if your city isn\'t on the list yet, it will be soon.',
+  },
+  {
+    q: 'Is Outrun free to download?',
+    a: 'Yes — Outrun is free to download on the App Store. Some premium features and event tickets are available as in-app purchases.',
+  },
+];
+
+function FAQ() {
+  const [open, setOpen] = useState<number | null>(null);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {FAQS.map(({ q, a }, i) => (
+        <div
+          key={i}
+          style={{
+            borderRadius: 16,
+            border: '1px solid rgba(255,255,255,.08)',
+            background: open === i ? 'rgba(255,255,255,.07)' : 'rgba(255,255,255,.03)',
+            transition: 'background .25s ease',
+            overflow: 'hidden',
+          }}
+        >
+          <button
+            onClick={() => setOpen(open === i ? null : i)}
+            style={{
+              width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              gap: 24, padding: 'clamp(18px,2.5vw,24px) clamp(20px,3vw,32px)',
+              background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
+            }}
+          >
+            <span style={{ fontFamily: FB, fontSize: 'clamp(15px,1.5vw,18px)', fontWeight: 600, color: '#fff' }}>{q}</span>
+            <span style={{
+              flexShrink: 0, width: 28, height: 28, borderRadius: '50%',
+              border: '1px solid rgba(255,255,255,.2)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transform: open === i ? 'rotate(180deg)' : 'rotate(0deg)',
+              transition: 'transform .3s ease',
+            }}>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M2 4l4 4 4-4" stroke="rgba(255,255,255,.6)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+          </button>
+          <div style={{
+            overflow: 'hidden',
+            maxHeight: open === i ? 300 : 0,
+            transition: 'max-height .4s cubic-bezier(.4,0,.2,1)',
+          }}>
+            <p style={{
+              fontFamily: FB, fontSize: 'clamp(14px,1.3vw,16px)',
+              color: 'rgba(255,255,255,.5)', lineHeight: 1.85,
+              padding: '0 clamp(20px,3vw,32px) clamp(18px,2.5vw,24px)',
+            }}>{a}</p>
           </div>
         </div>
+      ))}
+    </div>
+  );
+}
 
-        {/* Tab bar */}
-        <div style={{ borderTop: '0.5px solid rgba(255,255,255,.08)', padding: '10px 0 20px', display: 'flex', justifyContent: 'space-around', alignItems: 'center', background: '#0a0a14', flexShrink: 0 }}>
-          {/* House — active */}
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff">
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-          </svg>
-          {/* Star — inactive */}
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(255,255,255,0.4)">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-          </svg>
-          {/* Runner — inactive */}
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(255,255,255,0.4)">
-            <path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/>
-          </svg>
-        </div>
-      </div>
+/* ─── Flag panels with hover ────────────────────────────────── */
+function FlagPanels() {
+  const [hovered, setHovered] = useState<number | null>(null);
+  const flags = [
+    { code: 'gb', label: 'United Kingdom', sub: 'London · Manchester · Edinburgh' },
+    { code: 'it', label: 'Italy',          sub: 'Milan · Rome · Florence' },
+    { code: 'es', label: 'Spain',          sub: 'Madrid · Barcelona' },
+  ];
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, height: 'clamp(260px,28vw,380px)' }}>
+      {flags.map(({ code, label, sub }, i) => {
+        const isHovered = hovered === i;
+        return (
+          <div
+            key={label}
+            onMouseEnter={() => setHovered(i)}
+            onMouseLeave={() => setHovered(null)}
+            style={{
+              borderRadius: 20,
+              overflow: 'hidden',
+              position: 'relative',
+              cursor: 'pointer',
+              transform: isHovered ? 'scale(1.03) translateY(-6px)' : 'scale(1) translateY(0)',
+              transition: 'transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease',
+              boxShadow: isHovered ? '0 24px 48px rgba(0,0,0,.7)' : '0 4px 16px rgba(0,0,0,.3)',
+            }}
+          >
+            <img
+              src={`https://flagcdn.com/w1280/${code}.png`}
+              alt={label}
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', transition: 'transform .4s ease', transform: isHovered ? 'scale(1.06)' : 'scale(1)' }}
+            />
+            <div style={{ position: 'absolute', inset: 0, background: isHovered ? 'rgba(7,7,15,.45)' : 'rgba(7,7,15,.65)', transition: 'background .3s ease' }} />
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: 'clamp(20px,3vw,36px)' }}>
+              <p style={{ fontFamily: FD, fontSize: 'clamp(20px,2.4vw,32px)', letterSpacing: .5, lineHeight: 1, marginBottom: 10 }}>{label}</p>
+              <p style={{ fontFamily: FB, fontSize: 'clamp(12px,1.1vw,14px)', color: 'rgba(255,255,255,.45)', lineHeight: 1.6 }}>{sub}</p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ─── Three-phone hover stack ───────────────────────────────── */
+function PhoneStack() {
+  const [hovered, setHovered] = useState<number | null>(null);
+  const screens = ['/app2.jpg', '/app1.jpg', '/app3.jpg'];
+  const baseZ = [2, 3, 1];
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-end', height: 'clamp(480px,52vw,660px)' }}>
+      {screens.map((src, i) => {
+        const isHovered = hovered === i;
+        const otherHovered = hovered !== null && hovered !== i;
+        return (
+          <div
+            key={i}
+            onMouseEnter={() => setHovered(i)}
+            onMouseLeave={() => setHovered(null)}
+            style={{
+              height: i === 1 ? '100%' : '88%',
+              flexShrink: 0,
+              marginLeft: i > 0 ? -40 : 0,
+              zIndex: isHovered ? 10 : baseZ[i],
+              borderRadius: 44,
+              background: '#000',
+              border: '1.5px solid rgba(255,255,255,.15)',
+              boxShadow: isHovered
+                ? '0 60px 100px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.12)'
+                : '0 40px 80px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.08)',
+              overflow: 'hidden',
+              position: 'relative',
+              aspectRatio: '9/19.5',
+              cursor: 'pointer',
+              transform: isHovered
+                ? 'scale(1.07) translateY(-16px)'
+                : otherHovered
+                  ? 'scale(0.94) translateY(8px)'
+                  : 'scale(1) translateY(0)',
+              filter: otherHovered ? 'brightness(0.55)' : 'brightness(1)',
+              transition: 'transform .35s cubic-bezier(.34,1.56,.64,1), filter .3s ease, box-shadow .3s ease',
+            }}
+          >
+            <div style={{ position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)', width: 72, height: 22, background: '#000', borderRadius: 20, zIndex: 10 }} />
+            <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -252,16 +434,22 @@ function PosterStrip({ dir }: { dir: 'left' | 'right' }) {
       <div className={dir === 'left' ? 'scroll-left' : 'scroll-right'} style={{ gap: 12 }}>
         {items.map((p, i) => (
           <div key={i} style={{
-            flexShrink: 0, width: 'clamp(160px,18vw,210px)', borderRadius: R, overflow: 'hidden',
-            aspectRatio: '3/4', position: 'relative',
+            flexShrink: 0, width: 'clamp(180px,20vw,240px)', borderRadius: R,
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 100%)',
+            border: '1px solid rgba(255,255,255,0.14)',
+            borderTop: '1px solid rgba(255,255,255,0.22)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.12)',
+            padding: '20px 18px 22px',
+            display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+            minHeight: 'clamp(140px,16vw,190px)',
           }}>
-            <img src={p.poster} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(7,7,15,.85) 0%, transparent 55%)' }} />
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '14px 12px' }}>
-              <div style={{ fontFamily: FB, fontSize: 9, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,255,255,.4)', textTransform: 'uppercase', marginBottom: 4 }}>{p.city} · {p.date}</div>
-              <div style={{ fontFamily: FD, fontSize: 16, letterSpacing: .5, color: '#fff', lineHeight: 1.1 }}>{p.name}</div>
-              <div style={{ fontFamily: FB, fontSize: 10, color: 'rgba(255,255,255,.35)', marginTop: 6 }}>{p.going} going</div>
+            <div>
+              <div style={{ fontFamily: FB, fontSize: 9, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,255,255,.35)', textTransform: 'uppercase', marginBottom: 10 }}>{p.date}</div>
+              <div style={{ fontFamily: FD, fontSize: 'clamp(22px,2.5vw,28px)', letterSpacing: .5, color: '#fff', lineHeight: 1.1 }}>{p.city}</div>
             </div>
+            <div style={{ fontFamily: FB, fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,.28)', marginTop: 16 }}>{p.going} going</div>
           </div>
         ))}
       </div>
@@ -375,15 +563,17 @@ export default function Home() {
   const heroImgY  = useTransform(scrollYProgress, [0, 1], ['0%', '18%']);
   const heroTextY = useTransform(scrollYProgress, [0, 1], [0, 60]);
   const heroOp    = useTransform(scrollYProgress, [0, .6], [1, 0]);
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
 
   return (
     <>
-      <Nav />
+      <Nav onDownload={() => setWaitlistOpen(true)} />
+      <WaitlistModal open={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
 
-      {/* ══════════════════════════════════════════════
-          1. HERO — brand statement
-      ══════════════════════════════════════════════ */}
-      <section ref={heroRef} style={{ position: 'relative', height: '100vh', minHeight: 680, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {/* ══════════════════════════════════════════════
+            1. HERO — brand statement
+        ══════════════════════════════════════════════ */}
+      <section ref={heroRef} style={{ position: 'relative', height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {/* Photo — parallax, nearly unobstructed */}
         <motion.div style={{ position: 'absolute', inset: '-6%', y: heroImgY }}>
           <img src="/photo-hero.jpeg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 22%' }} />
@@ -414,202 +604,147 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════════════
-          2. SOCIAL FEED — show the product
+          2. MANIFESTO — photo grid + statement
       ══════════════════════════════════════════════ */}
-      <section style={{ background: BG, padding: 'clamp(72px,10vw,120px) clamp(24px,5vw,72px)', overflow: 'hidden' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+      <section id="who-we-are" style={{ background: BG, height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 clamp(24px,5vw,72px)' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
 
-          {/* Section label */}
           <Reveal>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 'clamp(48px,7vw,72px)', borderTop: '1px solid rgba(255,255,255,.12)', paddingTop: 22 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 'clamp(24px,3vw,40px)', borderTop: '1px solid rgba(255,255,255,.12)', paddingTop: 22 }}>
               <span style={{ fontFamily: FD, fontSize: 'clamp(18px,2vw,24px)', letterSpacing: 3, color: 'rgba(255,255,255,.5)' }}>01</span>
               <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,.2)', flexShrink: 0 }} />
-              <span style={{ fontFamily: FD, fontSize: 'clamp(16px,1.8vw,22px)', letterSpacing: 4, color: 'rgba(255,255,255,.45)', textTransform: 'uppercase' }}>Social Running</span>
+              <span style={{ fontFamily: FD, fontSize: 'clamp(16px,1.8vw,22px)', letterSpacing: 4, color: 'rgba(255,255,255,.45)', textTransform: 'uppercase' }}>Who We Are</span>
             </div>
           </Reveal>
 
-          {/* Two columns — phone left-aligned so it lines up with sections below */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(40px,6vw,80px)', alignItems: 'center' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }}>
 
-            {/* Left — phone flush left */}
-            <Reveal y={40}>
-              <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                <PhoneFeed />
-              </div>
-            </Reveal>
-
-            {/* Right — headline + text + stats */}
-            <Reveal delay={.1} y={24}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(18px,2.5vw,28px)' }}>
-                <h2 style={{ fontFamily: FD, fontSize: 'clamp(48px,6.5vw,88px)', lineHeight: .88, letterSpacing: .5 }}>
-                  YOUR<br />FRIENDS<br />ARE ALREADY<br />OUT THERE.
-                </h2>
-                <p style={{ fontFamily: FB, fontSize: 'clamp(16px,1.6vw,19px)', color: 'rgba(255,255,255,.82)', lineHeight: 1.75 }}>
-                  A live feed of every run from the people you follow. See their route, pace, and time — and react with a selfie.
-                </p>
-                <p style={{ fontFamily: FB, fontSize: 'clamp(16px,1.6vw,19px)', color: 'rgba(255,255,255,.48)', lineHeight: 1.75 }}>
-                  Running hits different when people are watching. Every km you post shows up in your crew's feed. Their runs show up in yours. The app that makes you lace up tomorrow.
-                </p>
-
-                {/* Stats */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, paddingTop: 4 }}>
-                  {[['1,400+', 'Runners'], ['120+', 'Clubs'], ['11', 'Cities']].map(([n, l]) => (
-                    <div key={l} style={{
-                      background: 'rgba(255,255,255,.05)',
-                      border: '1px solid rgba(255,255,255,.09)',
-                      backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
-                      borderRadius: 16, padding: '16px 14px',
-                      display: 'flex', flexDirection: 'column', gap: 5,
-                    }}>
-                      <div style={{ fontFamily: FD, fontSize: 'clamp(28px,3.5vw,44px)', letterSpacing: .5, color: '#fff', lineHeight: 1 }}>{n}</div>
-                      <div style={{ fontFamily: FB, fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,.3)', letterSpacing: .4 }}>{l}</div>
-                    </div>
-                  ))}
+          {/* Left — photo grid */}
+          <Reveal y={32}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6 }}>
+              {[
+                '/community1.jpg', '/photo-action.jpeg', '/community2.jpg',
+                '/photo-jump.jpeg', '/community3.jpg',  '/community4.jpg',
+              ].map((src, i) => (
+                <div key={i} style={{ aspectRatio: '3/4', borderRadius: 12, overflow: 'hidden' }}>
+                  <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform .5s ease', filter: 'brightness(0.92)' }}
+                    onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.04)')}
+                    onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')} />
                 </div>
+              ))}
+            </div>
+          </Reveal>
+
+          {/* Right — manifesto text */}
+          <Reveal delay={.15} y={24}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+              <h2 style={{ fontFamily: FD, fontSize: 'clamp(44px,5.5vw,72px)', lineHeight: .88, letterSpacing: .5 }}>
+                A NEW<br />SOCIAL<br />FOR RUNNERS.
+              </h2>
+              <p style={{ fontFamily: FB, fontSize: 'clamp(15px,1.4vw,17px)', color: 'rgba(255,255,255,.82)', lineHeight: 1.8 }}>
+                Outrun is not a fitness app. It's a social network built around the run — where your miles are content, your crew is your community, and every km matters.
+              </p>
+              <p style={{ fontFamily: FB, fontSize: 'clamp(14px,1.2vw,15px)', color: 'rgba(255,255,255,.42)', lineHeight: 1.8 }}>
+                Built for the generation that runs not just for fitness — but for the feeling, the people, and the city.
+              </p>
+            </div>
+          </Reveal>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════
+          3. THREE PHONES — onboarding screens
+      ══════════════════════════════════════════════ */}
+      <section id="the-app" style={{ background: BG, height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 clamp(24px,5vw,72px)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', width: '100%' }}>
+
+          <Reveal>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 'clamp(24px,3vw,40px)', borderTop: '1px solid rgba(255,255,255,.12)', paddingTop: 22 }}>
+              <span style={{ fontFamily: FD, fontSize: 'clamp(18px,2vw,24px)', letterSpacing: 3, color: 'rgba(255,255,255,.5)' }}>02</span>
+              <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,.2)', flexShrink: 0 }} />
+              <span style={{ fontFamily: FD, fontSize: 'clamp(16px,1.8vw,22px)', letterSpacing: 4, color: 'rgba(255,255,255,.45)', textTransform: 'uppercase' }}>The App</span>
+            </div>
+          </Reveal>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }}>
+
+            {/* Left — stacked phones */}
+            <Reveal y={32}>
+              <PhoneStack />
+            </Reveal>
+
+            {/* Right — text */}
+            <Reveal delay={.15} y={24}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                <h2 style={{ fontFamily: FD, fontSize: 'clamp(36px,4.5vw,60px)', lineHeight: .88, letterSpacing: .5 }}>
+                  THE FIRST<br />RUNNING APP<br />THAT'S TRULY<br />SOCIAL.
+                </h2>
+                <p style={{ fontFamily: FB, fontSize: 'clamp(14px,1.3vw,16px)', color: 'rgba(255,255,255,.82)', lineHeight: 1.8 }}>
+                  Interact with friends on the best running feed. Track your runs, dive into detailed stats, and find run clubs around you to join.
+                </p>
               </div>
             </Reveal>
+
           </div>
 
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════
-          3. EVENTS — auto-scrolling posters
+          3. WHERE WE RUN — flag panels
       ══════════════════════════════════════════════ */}
-      <section style={{ background: BG, paddingBottom: 'clamp(56px,7vw,88px)', overflow: 'hidden' }}>
-        <Reveal>
-          <div style={{ padding: '0 clamp(24px,5vw,72px) clamp(36px,5vw,52px)' }}>
-            <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-              {/* Section label */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 36, borderTop: '1px solid rgba(255,255,255,.12)', paddingTop: 22 }}>
-                <span style={{ fontFamily: FD, fontSize: 'clamp(18px,2vw,24px)', letterSpacing: 3, color: 'rgba(255,255,255,.5)' }}>02</span>
-                <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,.2)', flexShrink: 0 }} />
-                <span style={{ fontFamily: FD, fontSize: 'clamp(16px,1.8vw,22px)', letterSpacing: 4, color: 'rgba(255,255,255,.45)', textTransform: 'uppercase' }}>Run Tickets</span>
-              </div>
-              <h2 style={{ fontFamily: FD, fontSize: 'clamp(40px,5.5vw,68px)', lineHeight: .9, letterSpacing: .5, marginBottom: 20 }}>
-                FIND YOUR NEXT RUN TODAY.
-              </h2>
-              <p style={{ fontFamily: FB, fontSize: 'clamp(16px,1.6vw,19px)', color: 'rgba(255,255,255,.82)', maxWidth: 600, lineHeight: 1.75 }}>
-                Run clubs worldwide post their events on Outrun. Browse what's on, tap to join, and your ticket is in the app — ready to scan at the door.
-              </p>
-            </div>
-          </div>
-        </Reveal>
+      <section id="where-we-run" style={{ background: BG, height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 clamp(24px,5vw,72px)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', width: '100%' }}>
 
-        <div style={{ position: 'relative' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <PosterStrip dir="left" />
-            <PosterStrip dir="right" />
-          </div>
-          {/* Edge fades — wide and soft, cards dissolve well before the edge */}
-          <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 'clamp(80px,18vw,260px)', background: `linear-gradient(to right, ${BG} 0%, ${BG} 20%, transparent 100%)`, pointerEvents: 'none', zIndex: 2 }} />
-          <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 'clamp(80px,18vw,260px)', background: `linear-gradient(to left, ${BG} 0%, ${BG} 20%, transparent 100%)`, pointerEvents: 'none', zIndex: 2 }} />
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════
-          4. COMMUNITY — more than a sport
-      ══════════════════════════════════════════════ */}
-      <section style={{ background: BG, padding: 'clamp(40px,5vw,64px) clamp(24px,5vw,72px)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'clamp(40px,6vw,72px)', alignItems: 'center' }}>
-
-          {/* Text */}
-          <Reveal y={24}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, borderTop: '1px solid rgba(255,255,255,.12)', paddingTop: 22, marginBottom: 8 }}>
-                <span style={{ fontFamily: FD, fontSize: 'clamp(18px,2vw,24px)', letterSpacing: 3, color: 'rgba(255,255,255,.5)' }}>03</span>
-                <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,.2)', flexShrink: 0 }} />
-                <span style={{ fontFamily: FD, fontSize: 'clamp(16px,1.8vw,22px)', letterSpacing: 4, color: 'rgba(255,255,255,.45)', textTransform: 'uppercase' }}>Community</span>
-              </div>
-              <h2 style={{ fontFamily: FD, fontSize: 'clamp(52px,7.5vw,96px)', lineHeight: .88, letterSpacing: .5 }}>
-                MORE THAN<br />A SPORT.
-              </h2>
-              <p style={{ fontFamily: FB, fontSize: 'clamp(16px,1.6vw,19px)', color: 'rgba(255,255,255,.82)', lineHeight: 1.75, maxWidth: 420 }}>
-                Running is where friendships start. It's the stranger who becomes your training partner, the post-run coffee that turns into a ritual, the group chat that never goes quiet.
-              </p>
-              <p style={{ fontFamily: FB, fontSize: 'clamp(16px,1.6vw,19px)', color: 'rgba(255,255,255,.65)', lineHeight: 1.75, maxWidth: 420 }}>
-                Outrun is built for the moments that happen after the finish line.
-              </p>
-            </div>
-          </Reveal>
-
-          {/* Interactive photo deck */}
-          <Reveal delay={.12} y={32}>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <PhotoDeck />
-            </div>
-          </Reveal>
-
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════
-          5. MAP
-      ══════════════════════════════════════════════ */}
-      <section style={{ background: BG, padding: 'clamp(72px,10vw,120px) clamp(24px,5vw,72px)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <Reveal>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, borderTop: '1px solid rgba(255,255,255,.12)', paddingTop: 22, marginBottom: 24 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 'clamp(24px,3vw,36px)', borderTop: '1px solid rgba(255,255,255,.12)', paddingTop: 22 }}>
+              <span style={{ fontFamily: FD, fontSize: 'clamp(18px,2vw,24px)', letterSpacing: 3, color: 'rgba(255,255,255,.5)' }}>03</span>
+              <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,.2)', flexShrink: 0 }} />
+              <span style={{ fontFamily: FD, fontSize: 'clamp(16px,1.8vw,22px)', letterSpacing: 4, color: 'rgba(255,255,255,.45)', textTransform: 'uppercase' }}>Where We Run</span>
+            </div>
+          </Reveal>
+
+          <Reveal y={16}>
+            <div style={{ marginBottom: 'clamp(36px,5vw,56px)', textAlign: 'center' }}>
+              <p style={{ fontFamily: FD, fontSize: 'clamp(48px,6vw,88px)', lineHeight: 1, letterSpacing: .5 }}>
+                10,000+
+              </p>
+              <p style={{ fontFamily: FB, fontSize: 'clamp(15px,1.5vw,18px)', color: 'rgba(255,255,255,.5)', letterSpacing: 2, textTransform: 'uppercase', marginTop: 12 }}>
+                runs recorded
+              </p>
+            </div>
+          </Reveal>
+
+          <FlagPanels />
+
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════
+          4. FAQ + FOOTER
+      ══════════════════════════════════════════════ */}
+      <section id="faq" style={{ background: BG, height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 'clamp(32px,4vw,56px) clamp(24px,5vw,72px)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', width: '100%' }}>
+
+          <Reveal>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 'clamp(20px,2.5vw,32px)', borderTop: '1px solid rgba(255,255,255,.12)', paddingTop: 18 }}>
               <span style={{ fontFamily: FD, fontSize: 'clamp(18px,2vw,24px)', letterSpacing: 3, color: 'rgba(255,255,255,.5)' }}>04</span>
               <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,.2)', flexShrink: 0 }} />
-              <span style={{ fontFamily: FD, fontSize: 'clamp(16px,1.8vw,22px)', letterSpacing: 4, color: 'rgba(255,255,255,.45)', textTransform: 'uppercase' }}>Live Worldwide</span>
-            </div>
-            <div style={{ marginBottom: 36 }}>
-              <h2 style={{ fontFamily: FD, fontSize: 'clamp(40px,5.5vw,72px)', lineHeight: .9, whiteSpace: 'nowrap', marginBottom: 16 }}>
-                YOUR CITY IS NEXT.
-              </h2>
-              <p style={{ fontFamily: FB, fontSize: 'clamp(15px,1.4vw,17px)', color: 'rgba(255,255,255,.82)', lineHeight: 1.75, maxWidth: 520 }}>
-                Already live in 11 cities across Europe, South America, and Asia — with new run clubs joining every week.
-              </p>
+              <span style={{ fontFamily: FD, fontSize: 'clamp(16px,1.8vw,22px)', letterSpacing: 4, color: 'rgba(255,255,255,.45)', textTransform: 'uppercase' }}>FAQ</span>
             </div>
           </Reveal>
 
-          <Reveal delay={.1} y={32}>
-            <div style={{ borderRadius: R, overflow: 'hidden', height: 'min(50vh, 460px)', position: 'relative' }}>
-              <MapClient />
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 48, background: `linear-gradient(to bottom,${BG},transparent)`, pointerEvents: 'none', zIndex: 10 }} />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 56, background: `linear-gradient(to top,${BG},transparent)`, pointerEvents: 'none', zIndex: 10 }} />
-            </div>
-          </Reveal>
+          <FAQ />
+
         </div>
+
+
       </section>
 
-      {/* ══════════════════════════════════════════════
-          6. CTA — Primrose Hill
-      ══════════════════════════════════════════════ */}
-      <section style={{ position: 'relative', height: '100vh', minHeight: 640, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <img src="/photo-primrose.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(7,7,15,.5)' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 60% at 50% 50%, transparent 20%, rgba(7,7,15,.7) 100%)' }} />
+      <SiteFooter showAppLinks />
 
-        <motion.div
-          initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: .9, ease: [.16, 1, .3, 1] }}
-          style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '0 clamp(20px,4vw,48px)' }}>
-          <div style={{ fontFamily: FD, fontSize: 'clamp(64px,10vw,132px)', lineHeight: .84, letterSpacing: 2, marginBottom: 48, color: '#fff' }}>
-            BECOME AN<br />OUTRUNNER.
-          </div>
-          <a href="https://apps.apple.com" style={{
-            display: 'inline-flex', alignItems: 'center', gap: 10,
-            background: '#fff', color: BG, borderRadius: 100, padding: '16px 40px',
-            fontSize: 14, fontFamily: FB, fontWeight: 800, letterSpacing: .2,
-            textDecoration: 'none', transition: 'opacity .2s, transform .2s',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.opacity = '.86'; e.currentTarget.style.transform = 'scale(1.04)'; }}
-            onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1)'; }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" /></svg>
-            Download on App Store
-          </a>
-        </motion.div>
-      </section>
-
-      {/* ══ FOOTER ══ */}
-      <footer style={{ background: BG, borderTop: '1px solid rgba(255,255,255,.05)', padding: '24px clamp(20px,4vw,56px)' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-          <span style={{ fontFamily: FD, fontSize: 14, letterSpacing: 5, color: 'rgba(255,255,255,.14)' }}>OUTRUN</span>
-          <span style={{ fontFamily: FB, fontSize: 11, color: 'rgba(255,255,255,.14)' }}>© {new Date().getFullYear()} Outrun. All rights reserved.</span>
-        </div>
-      </footer>
     </>
   );
 }

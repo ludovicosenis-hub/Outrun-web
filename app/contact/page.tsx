@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import WaitlistModal from '../WaitlistModal';
+import SiteFooter from '../SiteFooter';
 
 const FD = 'var(--font-bebas-var), Impact, sans-serif';
 const FB = 'var(--font-inter-var), -apple-system, sans-serif';
@@ -16,7 +18,7 @@ const TOPICS = [
   'Other',
 ];
 
-function Nav() {
+function Nav({ onDownload }: { onDownload: () => void }) {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 60);
@@ -27,31 +29,30 @@ function Nav() {
     <nav style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 500,
       height: 64, padding: '0 clamp(20px,4vw,48px)',
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center',
       background: scrolled ? 'rgba(7,7,15,.92)' : 'rgba(7,7,15,.6)',
       backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
       transition: 'background .4s',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-        <a href="/" style={{ fontFamily: FD, fontSize: 20, letterSpacing: 6, color: '#fff', textDecoration: 'none' }}>OUTRUN</a>
-        <a href="/join" className="mobile-hide" style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,.55)', textDecoration: 'none', letterSpacing: .2, transition: 'color .2s' }}
-          onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,.55)')}>
-          Join Us
-        </a>
-        <a href="/contact" className="mobile-hide" style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: '#fff', textDecoration: 'none', letterSpacing: .2 }}>
-          Contact
-        </a>
+      <div className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+        {[['Join Us', '/join'], ['Privacy', '/privacy'], ['Terms', '/terms']].map(([l, href]) => (
+          <a key={l} href={href} style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,.55)', textDecoration: 'none', letterSpacing: .2, transition: 'color .2s' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,.55)')}>{l}</a>
+        ))}
       </div>
-      <a href="https://apps.apple.com" style={{
-        background: '#fff', color: BG, borderRadius: 100, padding: '9px 24px',
-        fontSize: 13, fontFamily: FB, fontWeight: 700, letterSpacing: .3,
-        textDecoration: 'none', transition: 'opacity .2s',
-      }}
-        onMouseEnter={e => (e.currentTarget.style.opacity = '.8')}
-        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-        Download
-      </a>
+      <a href="/" style={{ fontFamily: FD, fontSize: 22, letterSpacing: 7, color: '#fff', textDecoration: 'none', justifySelf: 'center' }}>OUTRUN</a>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <button onClick={onDownload} style={{
+          background: '#fff', color: BG, borderRadius: 100, padding: '9px 24px',
+          fontSize: 13, fontFamily: FB, fontWeight: 700, letterSpacing: .3,
+          border: 'none', cursor: 'pointer', transition: 'opacity .2s',
+        }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '.8')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+          Download
+        </button>
+      </div>
     </nav>
   );
 }
@@ -78,7 +79,7 @@ function ContactForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const body = `Name: ${name}\nEmail: ${email}\nTopic: ${topic}\n\nMessage:\n${message}`;
-    window.location.href = `mailto:info@outrun.com?subject=${encodeURIComponent(`[${topic}] Message from ${name}`)}&body=${encodeURIComponent(body)}`;
+    window.location.href = `mailto:info@outrunldn.com?subject=${encodeURIComponent(`[${topic}] Message from ${name}`)}&body=${encodeURIComponent(body)}`;
   };
 
   return (
@@ -149,44 +150,33 @@ function ContactForm() {
 }
 
 export default function ContactPage() {
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
   return (
     <>
-      <Nav />
+      <Nav onDownload={() => setWaitlistOpen(true)} />
+      <WaitlistModal open={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
 
       <section style={{ background: BG, minHeight: '100vh', display: 'flex', alignItems: 'center', padding: 'clamp(100px,12vw,140px) clamp(24px,5vw,72px) clamp(80px,10vw,120px)' }}>
-        <div style={{ maxWidth: 680, margin: '0 auto', width: '100%' }}>
-          <motion.div initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .9, ease: [.16,1,.3,1] }}>
-
-            <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,.12)', paddingTop: 22, marginBottom: 36 }}>
-              <span style={{ fontFamily: FD, fontSize: 'clamp(14px,1.6vw,20px)', letterSpacing: 4, color: 'rgba(255,255,255,.4)', textTransform: 'uppercase' }}>Get in touch</span>
-            </div>
-
-            <h1 style={{ fontFamily: FD, fontSize: 'clamp(52px,7vw,88px)', lineHeight: .88, letterSpacing: 1, marginBottom: 24 }}>
+        <div style={{ maxWidth: 720, margin: '0 auto', width: '100%' }}>
+          <motion.div initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .9, ease: [.16,1,.3,1] }}
+            style={{
+              borderRadius: 16,
+              border: '1px solid rgba(255,255,255,.08)',
+              background: 'rgba(255,255,255,.03)',
+              padding: 'clamp(32px,4vw,56px)',
+            }}>
+            <h1 style={{ fontFamily: FD, fontSize: 'clamp(36px,4.5vw,60px)', lineHeight: .9, letterSpacing: .5, marginBottom: 10 }}>
               CONTACT US.
             </h1>
-            <p style={{ fontFamily: FB, fontSize: 'clamp(15px,1.4vw,17px)', color: 'rgba(255,255,255,.45)', lineHeight: 1.75, marginBottom: 52 }}>
+            <p style={{ fontFamily: FB, fontSize: 'clamp(13px,1.1vw,15px)', color: 'rgba(255,255,255,.38)', marginBottom: 40 }}>
               Whether it's a partnership, a question, or just a hello — we'd love to hear from you.
             </p>
-
-            <div style={{
-              background: 'rgba(255,255,255,.03)',
-              border: '1px solid rgba(255,255,255,.08)',
-              borderRadius: 24,
-              padding: 'clamp(28px,4vw,48px)',
-            }}>
-              <ContactForm />
-            </div>
-
+            <ContactForm />
           </motion.div>
         </div>
       </section>
 
-      <footer style={{ background: BG, borderTop: '1px solid rgba(255,255,255,.05)', padding: '24px clamp(20px,4vw,56px)' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-          <span style={{ fontFamily: FD, fontSize: 14, letterSpacing: 5, color: 'rgba(255,255,255,.14)' }}>OUTRUN</span>
-          <span style={{ fontFamily: FB, fontSize: 11, color: 'rgba(255,255,255,.14)' }}>© {new Date().getFullYear()} Outrun. All rights reserved.</span>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   );
 }
